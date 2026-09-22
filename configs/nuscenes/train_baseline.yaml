@@ -1,0 +1,45 @@
+# Shared recipe. The three train_*.yaml files must differ ONLY in `arm` and `adv.norms`.
+arm: baseline
+seed: 0
+dataset: nuscenes
+
+nuscenes:
+  root: data/nuscenes              # contains samples/ and v1.0-*/
+  index: data/nuscenes_2d.json     # written by scripts/prepare_nuscenes.py
+  train_stride: 2                  # keyframes are 0.5 s apart; stride 2 halves near-duplicates
+  val_stride: 1
+
+model:
+  arch: mobilenet_v3
+  num_classes: 4                  # background + pedestrian, vehicle, cyclist
+  min_size: 800
+  max_size: 1333
+  trainable_layers: 3
+
+train:
+  epochs: 20                      # upper bound; best epoch is selected on val
+  patience: 4                     # stop after 4 epochs without improvement
+  batch_size: 4
+  lr: 0.01
+  momentum: 0.9
+  weight_decay: 1.0e-4
+  warmup_iters: 300
+  grad_clip: 10.0
+  num_workers: 4
+  amp: true                       # bf16 autocast, CUDA only
+
+adv:
+  norms: []                       # baseline: no adversarial term
+  lambda: 1.0
+  train_steps: 3
+  linf_eps: 0.0313725             # 8/255
+  l2_rms: 0.0039216               # 1/255 per-pixel RMS  -> eps_l2 = l2_rms * sqrt(C*H*W)
+  l1_mean: 0.0019608              # 0.5/255 per-pixel mean -> eps_l1 = l1_mean * C*H*W
+  l1_sparsity: 0.99               # L1 steps touch the top 1% of gradient coordinates
+
+eval:
+  val_images: 200
+  select_images: 50               # frames for the per-epoch L_inf-PGD check
+  robust_images: 100
+  robust_steps: 10
+  robust_norms: [linf, l2, l1]
