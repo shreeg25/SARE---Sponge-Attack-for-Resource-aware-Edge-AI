@@ -1,0 +1,45 @@
+# Shared recipe. The three train_*.yaml files must differ ONLY in `arm` and `adv.norms`.
+arm: linf_at
+seed: 0
+dataset: mot17
+
+mot17:
+  root: data/MOT17/train          # relative to repo root
+  sequences: [MOT17-02-FRCNN, MOT17-04-FRCNN, MOT17-09-FRCNN]
+  val_frac: 0.3                   # last 30% of each sequence = val (and pilot) frames
+  train_stride: 1
+  val_stride: 5
+  min_visibility: 0.25
+
+model:
+  arch: mobilenet_v3
+  num_classes: 2                  # background + pedestrian
+  min_size: 800
+  max_size: 1333
+  trainable_layers: 3
+
+train:
+  epochs: 6
+  batch_size: 4
+  lr: 0.01
+  momentum: 0.9
+  weight_decay: 1.0e-4
+  warmup_iters: 300
+  grad_clip: 10.0
+  num_workers: 4
+  amp: true                       # bf16 autocast, CUDA only
+
+adv:
+  norms: [linf]
+  lambda: 1.0
+  train_steps: 3
+  linf_eps: 0.0313725             # 8/255
+  l2_rms: 0.0039216               # 1/255 per-pixel RMS  -> eps_l2 = l2_rms * sqrt(C*H*W)
+  l1_mean: 0.0019608              # 0.5/255 per-pixel mean -> eps_l1 = l1_mean * C*H*W
+  l1_sparsity: 0.99               # L1 steps touch the top 1% of gradient coordinates
+
+eval:
+  val_images: 200
+  robust_images: 100
+  robust_steps: 10
+  robust_norms: [linf, l2, l1]
