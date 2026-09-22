@@ -7,11 +7,13 @@ the `adv` block, so baseline / MNAT / L_inf-only share an identical recipe.
 MNAT cycles the attack norm per iteration: linf, l2, l1, linf, ...
 
 Usage (from the repo root):
-    python scripts/train/train.py --config configs/train_baseline.yaml --smoke
-    python scripts/train/train.py --config configs/train_mnat.yaml --seed 1
+    python scripts/train/train.py --config configs/nuscenes/train_baseline.yaml --smoke
+    python scripts/train/train.py --config configs/nuscenes/train_mnat.yaml --seed 1
 
-Writes checkpoints/<arm>_s<seed>.pth after every epoch, a JSONL log in
-results/train/, and a final clean + robust AP50 summary.
+Keeps the best epoch (by the selection score) as checkpoints/<dataset>_<arm>_s<seed>.pth
+and the latest as ..._last.pth; stops early after `patience` epochs
+without improvement. Logs to results/train/ and ends with a clean + robust
+AP50 summary of the selected checkpoint.
 """
 
 import argparse
@@ -76,10 +78,12 @@ def main():
     seed = cfg["seed"] if args.seed is None else args.seed
     seed_all(seed)
 
-    if cfg["dataset"] == "mot17" and not Path(cfg["mot17"]["root"]).is_absolute():
-        cfg["mot17"]["root"] = str(ROOT / cfg["mot17"]["root"])
+    ds_cfg = cfg[cfg["dataset"]]
+    for key in ("root", "index"):
+        if key in ds_cfg and not Path(ds_cfg[key]).is_absolute():
+            ds_cfg[key] = str(ROOT / ds_cfg[key])
     if args.smoke:
-        cfg["eval"].update(val_images=4, robust_images=2, robust_steps=2)
+        cfg["eval"].update(val_images=4, robust_images=2, robust_steps=2, select_images=2)
 
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     tr, m, adv_cfg = cfg["train"], cfg["model"], cfg["adv"]
@@ -107,7 +111,7 @@ def main():
         else 0.5 * (1 + math.cos(math.pi * (it - warm) / max(1, total - warm))))
 
     norms = adv_cfg.get("norms") or []
-    name = f"{cfg['arm']}_s{seed}" + ("_smoke" if args.smoke else "")
+    name = f"{cfg['dataset']}_{cfg['arm']}_s{seed}" + ("_smoke" if args.smoke else "")
     (ROOT / "checkpoints").mkdir(exist_ok=True)
     log_dir = ROOT / "results" / "train"
     log_dir.mkdir(parents=True, exist_ok=True)
@@ -117,6 +121,8 @@ def main():
             "dataset": cfg["dataset"]}
 
     step, t0, skipped = 0, time.time(), 0
+    best_score, best_epoch, bad = -1.0, 0, 0
+    best_path = ROOT / "checkpoints" / f"{name}.pth"
     for epoch in range(tr["epochs"]):
         for imgs, tgts in dl:
             imgs = [i.to(dev, non_blocking=True) for i in imgs]
@@ -157,18 +163,33 @@ def main():
                 break
 
         ap_clean, nd = evaluate(model, val_ds, cfg["eval"]["val_images"], cfg, dev, None, amp)
-        rec = {"epoch": epoch + 1, "val_ap50": ap_clean, "val_dets_per_frame": nd,
-               "elapsed_min": (time.time() - t0) / 60}
+        # Same selection rule for every arm: mean of clean AP50 and L_inf-PGD AP50.
+        # Guards against robust overfitting in the adversarial arms (Rice et al., 2020).
+        ap_rob = evaluate(model, val_ds, cfg["eval"]["select_images"], cfg, dev, "linf", amp)[0]
+        score = 0.5 * (ap_clean + ap_rob)
+        state = {"model": model.state_dict(), "meta": meta, "epoch": epoch + 1}
+        torch.save(state, ROOT / "checkpoints" / f"{name}_last.pth")
+        if score > best_score:
+            best_score, best_epoch, bad = score, epoch + 1, 0
+            torch.save(state, best_path)
+        else:
+            bad += 1
+        rec = {"epoch": epoch + 1, "val_ap50": ap_clean, "val_linf_ap50": ap_rob,
+               "select_score": score, "best_epoch": best_epoch,
+               "val_dets_per_frame": nd, "elapsed_min": (time.time() - t0) / 60}
         print(json.dumps(rec))
         log.write(json.dumps(rec) + "\n")
         log.flush()
-        torch.save({"model": model.state_dict(), "meta": meta, "epoch": epoch + 1},
-                   ROOT / "checkpoints" / f"{name}.pth")
         if args.smoke:
             break
+        if bad >= tr["patience"]:
+            print(f"early stop: no improvement for {bad} epochs, best epoch {best_epoch}")
+            break
 
-    # Did hardening work? Clean vs PGD AP50 under every norm, for every arm.
-    final = {"name": name, "clean_ap50": ap_clean}
+    # Did hardening work? Clean vs PGD AP50 under every norm, on the selected checkpoint.
+    model.load_state_dict(torch.load(best_path, map_location=dev, weights_only=False)["model"])
+    final = {"name": name, "best_epoch": best_epoch,
+             "clean_ap50": evaluate(model, val_ds, cfg["eval"]["val_images"], cfg, dev, None, amp)[0]}
     for rn in cfg["eval"]["robust_norms"]:
         final[f"{rn}_ap50"] = evaluate(model, val_ds, cfg["eval"]["robust_images"], cfg, dev, rn, amp)[0]
     print(json.dumps(final, indent=2))
