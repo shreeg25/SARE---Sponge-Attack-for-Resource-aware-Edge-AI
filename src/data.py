@@ -1,7 +1,8 @@
-"""Datasets. MOT17 is here to debug the pipeline; Waymo slots in later
-with the same (image, target) interface."""
+"""Datasets. MOT17 was the debugging set; nuScenes CAM_FRONT is the study
+dataset. Both return (image in [0,1], {"boxes", "labels"})."""
 
 import glob
+import json
 import os
 import random
 
@@ -67,6 +68,35 @@ class MOT17Det(Dataset):
         return img, {"boxes": boxes, "labels": torch.ones(len(boxes), dtype=torch.int64)}
 
 
+class NuScenes2D(Dataset):
+    """CAM_FRONT keyframes from the index written by scripts/prepare_nuscenes.py.
+    Labels: 1 pedestrian, 2 vehicle, 3 cyclist."""
+
+    def __init__(self, index_path, data_root, split, conditions, stride=1, hflip=False):
+        with open(index_path) as fh:
+            recs = json.load(fh)["records"]
+        recs = [r for r in recs if r["split"] == split and r["condition"] in conditions]
+        if split == "train":
+            recs = [r for r in recs if r["boxes"]]
+        if not recs:
+            raise ValueError(f"no frames for split={split} conditions={conditions} in {index_path}")
+        self.items, self.root, self.hflip = recs[::stride], data_root, hflip
+
+    def __len__(self):
+        return len(self.items)
+
+    def __getitem__(self, i):
+        r = self.items[i]
+        img = read_image(os.path.join(self.root, r["file"]), ImageReadMode.RGB).float().div(255.0)
+        W = img.shape[2]
+        boxes = torch.tensor(r["boxes"], dtype=torch.float32).reshape(-1, 4)
+        labels = torch.tensor(r["labels"], dtype=torch.int64)
+        if self.hflip and random.random() < 0.5:
+            img = img.flip(-1)
+            boxes[:, [0, 2]] = W - boxes[:, [2, 0]]
+        return img, {"boxes": boxes, "labels": labels}
+
+
 def collate(batch):
     return tuple(zip(*batch))
 
@@ -79,6 +109,9 @@ def build_datasets(cfg):
         train = MOT17Det(dirs, "train", c["val_frac"], c["train_stride"], c["min_visibility"], hflip=True)
         val = MOT17Det(dirs, "val", c["val_frac"], c["val_stride"], c["min_visibility"], hflip=False)
         return train, val
-    if name == "waymo":
-        raise NotImplementedError("Waymo loader is written once bucket access works")
+    if name == "nuscenes":
+        c = cfg["nuscenes"]
+        train = NuScenes2D(c["index"], c["root"], "train", ["day"], c["train_stride"], hflip=True)
+        val = NuScenes2D(c["index"], c["root"], "select", ["day"], c["val_stride"], hflip=False)
+        return train, val
     raise ValueError(f"unknown dataset {name}")
