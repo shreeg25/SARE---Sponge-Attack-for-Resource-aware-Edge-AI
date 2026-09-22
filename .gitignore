@@ -6,3 +6,5 @@ results/*/*
 __pycache__/
 *.pth
 *.pt
+venv/
+venv_nusc/
