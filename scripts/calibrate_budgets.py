@@ -30,7 +30,7 @@ GRID = {
 }
 
 
-def ap_under(model, ds, idx, adv_cfg, norm, steps, dev, amp):
+def ap_under(model, ds, idx, adv_cfg, norm, steps, dev, amp, num_classes):
     preds, gts = [], []
     for i in idx:
         img, tgt = ds[int(i)]
@@ -42,7 +42,7 @@ def ap_under(model, ds, idx, adv_cfg, norm, steps, dev, amp):
             out = model([img])[0]
         preds.append({k: v.cpu() for k, v in out.items()})
         gts.append({k: v.cpu() for k, v in tgt.items()})
-    return ap50(preds, gts, 2)
+    return ap50(preds, gts, num_classes)
 
 
 def main():
@@ -54,25 +54,28 @@ def main():
     args = ap.parse_args()
 
     cfg = yaml.safe_load(open(ROOT / args.config))
-    if not Path(cfg["mot17"]["root"]).is_absolute():
-        cfg["mot17"]["root"] = str(ROOT / cfg["mot17"]["root"])
+    ds_cfg = cfg[cfg["dataset"]]
+    for key in ("root", "index"):
+        if key in ds_cfg and not Path(ds_cfg[key]).is_absolute():
+            ds_cfg[key] = str(ROOT / ds_cfg[key])
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     amp = bool(cfg["train"]["amp"]) and dev == "cuda"
 
     _, val = build_datasets(cfg)
     idx = np.linspace(0, len(val) - 1, num=min(args.images, len(val))).astype(int)
     model, _ = load_detector(str(ROOT / args.ckpt), dev)
+    ncls = cfg["model"]["num_classes"]
 
-    clean = ap_under(model, val, idx, cfg["adv"], None, 0, dev, amp)
+    clean = ap_under(model, val, idx, cfg["adv"], None, 0, dev, amp, ncls)
     print(f"clean AP50 {clean:.4f}\n")
     print(f"{'norm':5s} {'budget (x/255)':>15s} {'AP50':>8s} {'drop':>8s}")
     for norm, (key, values) in GRID.items():
         for v in values:
             adv_cfg = copy.deepcopy(cfg["adv"])
             adv_cfg[key] = v
-            a = ap_under(model, val, idx, adv_cfg, norm, args.steps, dev, amp)
+            a = ap_under(model, val, idx, adv_cfg, norm, args.steps, dev, amp, ncls)
             print(f"{norm:5s} {v * 255:15.2f} {a:8.4f} {clean - a:8.4f}", flush=True)
-    print("\nChoose the l2_rms and l1_mean whose drop is closest to linf at 8/255.")
+    print("\nSend this table back: budgets are matched at the L_inf eps where AP50 is ~half of clean.")
 
 
 if __name__ == "__main__":
