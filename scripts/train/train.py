@@ -33,7 +33,7 @@ import yaml
 from torch.utils.data import DataLoader
 
 from src.attacks import pgd
-from src.data import build_datasets, collate
+from src.data import build_datasets, build_test_sets, collate
 from src.metrics import ap50
 from src.models import build_detector
 
@@ -89,7 +89,7 @@ def main():
     tr, m, adv_cfg = cfg["train"], cfg["model"], cfg["adv"]
     amp = bool(tr["amp"]) and dev == "cuda"
 
-    train_ds, val_ds = build_datasets(cfg)
+    train_ds, val_ds = build_datasets(cfg)   # val_ds = select split: checkpoint selection only
     print(f"train frames {len(train_ds)}, val frames {len(val_ds)}, device {dev}, amp {amp}")
 
     gen = torch.Generator()
@@ -186,12 +186,17 @@ def main():
             print(f"early stop: no improvement for {bad} epochs, best epoch {best_epoch}")
             break
 
-    # Did hardening work? Clean vs PGD AP50 under every norm, on the selected checkpoint.
+    # Did hardening work? Clean vs PGD AP50 under every norm, on the selected checkpoint,
+    # measured on held-out test scenes per condition (select split only for MOT17).
     model.load_state_dict(torch.load(best_path, map_location=dev, weights_only=False)["model"])
-    final = {"name": name, "best_epoch": best_epoch,
-             "clean_ap50": evaluate(model, val_ds, cfg["eval"]["val_images"], cfg, dev, None, amp)[0]}
-    for rn in cfg["eval"]["robust_norms"]:
-        final[f"{rn}_ap50"] = evaluate(model, val_ds, cfg["eval"]["robust_images"], cfg, dev, rn, amp)[0]
+    tests = build_test_sets(cfg)
+    final = {"name": name, "best_epoch": best_epoch, "eval_split": "test" if tests else "select"}
+    for cond, ds in (tests or {"select": val_ds}).items():
+        res = {"frames": len(ds),
+               "clean_ap50": evaluate(model, ds, cfg["eval"]["val_images"], cfg, dev, None, amp)[0]}
+        for rn in cfg["eval"]["robust_norms"]:
+            res[f"{rn}_ap50"] = evaluate(model, ds, cfg["eval"]["robust_images"], cfg, dev, rn, amp)[0]
+        final[cond] = res
     print(json.dumps(final, indent=2))
     with open(log_dir / f"{name}_final.json", "w") as fh:
         json.dump(final, fh, indent=2)
