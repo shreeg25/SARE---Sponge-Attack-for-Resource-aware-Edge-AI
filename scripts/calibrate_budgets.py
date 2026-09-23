@@ -61,7 +61,7 @@ def main():
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     amp = bool(cfg["train"]["amp"]) and dev == "cuda"
 
-    _, val = build_datasets(cfg)
+    _, val = build_datasets(cfg)   # select split: budgets are fixed before any test data is seen
     idx = np.linspace(0, len(val) - 1, num=min(args.images, len(val))).astype(int)
     model, _ = load_detector(str(ROOT / args.ckpt), dev)
     ncls = cfg["model"]["num_classes"]
