@@ -115,3 +115,21 @@ def build_datasets(cfg):
         val = NuScenes2D(c["index"], c["root"], "select", ["day"], c["val_stride"], hflip=False)
         return train, val
     raise ValueError(f"unknown dataset {name}")
+
+
+TEST_CONDITIONS = ("day", "night", "rain", "night_rain")
+
+
+def build_test_sets(cfg):
+    """Held-out test sets, one per condition, never used for training or
+    checkpoint selection. Conditions absent from the index are skipped.
+    MOT17 has no separate test split, so it returns {}."""
+    if cfg["dataset"] != "nuscenes":
+        return {}
+    c, out = cfg["nuscenes"], {}
+    for cond in TEST_CONDITIONS:
+        try:
+            out[cond] = NuScenes2D(c["index"], c["root"], "test", [cond], c.get("test_stride", 1))
+        except ValueError:
+            pass
+    return out
