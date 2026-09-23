@@ -93,6 +93,9 @@ def main():
     ap.add_argument("--root", default="data/nuscenes")
     ap.add_argument("--version", default="v1.0-mini")
     ap.add_argument("--out", default="data/nuscenes_2d.json")
+    ap.add_argument("--keep-missing", action="store_true",
+                    help="index frames whose image file is absent (default: skip them, "
+                         "so a partial blob download still produces a usable index)")
     args = ap.parse_args()
 
     root = Path(args.root) if Path(args.root).is_absolute() else ROOT / args.root
@@ -118,6 +121,7 @@ def main():
     select_names = set(day_train[::SELECT_EVERY])
 
     records = []
+    missing = 0
     stats = defaultdict(lambda: {"scenes": 0, "frames": 0, **{v: 0 for v in CLASSES.values()}})
     for sc, cond, official in scenes:
         if official == "val" or cond != "day":
@@ -127,17 +131,23 @@ def main():
         else:
             split = "train"
         st = stats[(split, cond)]
-        st["scenes"] += 1
+        scene_frames = 0
         tok = sc["first_sample_token"]
         while tok:
             s = nusc.get("sample", tok)
             fname, boxes, labels, ids = boxes_for(nusc, s["data"][CAMERA])
+            tok = s["next"]
+            if not args.keep_missing and not (root / fname).is_file():
+                missing += 1
+                continue
             records.append({"file": fname, "scene": sc["name"], "split": split, "condition": cond,
                             "timestamp": s["timestamp"], "boxes": boxes, "labels": labels, "ids": ids})
+            scene_frames += 1
             st["frames"] += 1
             for l in labels:
                 st[CLASSES[l]] += 1
-            tok = s["next"]
+        if scene_frames:
+            st["scenes"] += 1
 
     out = Path(args.out) if Path(args.out).is_absolute() else ROOT / args.out
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -145,7 +155,8 @@ def main():
         json.dump({"version": args.version, "camera": CAMERA, "classes": CLASSES,
                    "records": records}, fh)
 
-    print(f"\nwrote {len(records)} frames to {out}\n")
+    print(f"\nwrote {len(records)} frames to {out}"
+          + (f"  ({missing} keyframes skipped: image file not downloaded)" if missing else "") + "\n")
     print(f"{'split':7s} {'cond':6s} {'scenes':>6s} {'frames':>7s} {'ped':>7s} {'vehicle':>8s} {'cyclist':>8s}")
     for (split, cond), st in sorted(stats.items()):
         print(f"{split:7s} {cond:6s} {st['scenes']:6d} {st['frames']:7d} {st['pedestrian']:7d} "
