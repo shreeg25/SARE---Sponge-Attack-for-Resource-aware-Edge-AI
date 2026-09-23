@@ -38,8 +38,9 @@ adv:
   l1_sparsity: 0.99               # L1 steps touch the top 1% of gradient coordinates
 
 eval:
-  val_images: 200
-  select_images: 50               # frames for the per-epoch L_inf-PGD check
-  robust_images: 100
+  select_clean_images: 200        # per-epoch clean AP50 on the select split
+  select_robust_images: 50        # per-epoch L_inf-PGD AP50 on the select split
+  test_clean_images: null         # null = every test frame (headline clean AP50)
+  test_robust_images: 100         # fixed, evenly spaced subset for PGD AP50, same frames for every arm
   robust_steps: 10
   robust_norms: [linf, l2, l1]
