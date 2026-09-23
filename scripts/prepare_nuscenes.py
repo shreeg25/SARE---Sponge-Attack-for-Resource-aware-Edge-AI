@@ -13,7 +13,7 @@ corners behind the camera, project, intersect the hull with the image.
 
 Conditions come from the human-written scene descriptions:
     night -> "night" in description; rain -> "rain" in description (includes
-    "after rain", i.e. wet roads); day -> neither. Night+rain counts as night.
+    "after rain", i.e. wet roads); night_rain -> both; day -> neither.
 
 Splits:
     train   day scenes from the official train split, minus the select subset
@@ -108,22 +108,23 @@ def main():
     scenes = []
     for sc in nusc.scene:
         d = sc["description"].lower()
-        cond = "night" if "night" in d else "rain" if "rain" in d else "day"
+        night, rain = "night" in d, "rain" in d
+        cond = "night_rain" if night and rain else "night" if night else "rain" if rain else "day"
         if sc["name"] in train_names:
             official = "train"
         elif sc["name"] in val_names:
             official = "val"
         else:
             continue
-        scenes.append((sc, cond, official))
+        scenes.append((sc, cond, official, night, rain))
 
-    day_train = sorted(sc["name"] for sc, c, o in scenes if o == "train" and c == "day")
+    day_train = sorted(sc["name"] for sc, c, o, *_ in scenes if o == "train" and c == "day")
     select_names = set(day_train[::SELECT_EVERY])
 
     records = []
     missing = 0
     stats = defaultdict(lambda: {"scenes": 0, "frames": 0, **{v: 0 for v in CLASSES.values()}})
-    for sc, cond, official in scenes:
+    for sc, cond, official, night, rain in scenes:
         if official == "val" or cond != "day":
             split = "test"
         elif sc["name"] in select_names:
@@ -141,6 +142,7 @@ def main():
                 missing += 1
                 continue
             records.append({"file": fname, "scene": sc["name"], "split": split, "condition": cond,
+                            "is_night": night, "is_rain": rain,
                             "timestamp": s["timestamp"], "boxes": boxes, "labels": labels, "ids": ids})
             scene_frames += 1
             st["frames"] += 1
