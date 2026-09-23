@@ -46,9 +46,11 @@ def seed_all(s):
 
 
 def evaluate(model, ds, n, cfg, dev, norm=None, amp=False):
-    """AP50 on n evenly spaced val frames, clean or under PGD with `norm`.
+    """AP50 on n evenly spaced frames of ds (all frames if n is null), clean or
+    under PGD with `norm`. Evenly spaced = deterministic, so every arm sees the
+    same frames.
     Also returns mean detections/frame above the 0.4 forwarding threshold."""
-    idx = np.linspace(0, len(ds) - 1, num=min(n, len(ds))).astype(int)
+    idx = np.linspace(0, len(ds) - 1, num=min(n or len(ds), len(ds))).astype(int)
     preds, gts, ndets = [], [], []
     for i in idx:
         img, tgt = ds[int(i)]
@@ -83,14 +85,15 @@ def main():
         if key in ds_cfg and not Path(ds_cfg[key]).is_absolute():
             ds_cfg[key] = str(ROOT / ds_cfg[key])
     if args.smoke:
-        cfg["eval"].update(val_images=4, robust_images=2, robust_steps=2, select_images=2)
+        cfg["eval"].update(select_clean_images=4, select_robust_images=2, test_clean_images=4,
+                           test_robust_images=2, robust_steps=2)
 
     dev = "cuda" if torch.cuda.is_available() else "cpu"
     tr, m, adv_cfg = cfg["train"], cfg["model"], cfg["adv"]
     amp = bool(tr["amp"]) and dev == "cuda"
 
-    train_ds, val_ds = build_datasets(cfg)   # val_ds = select split: checkpoint selection only
-    print(f"train frames {len(train_ds)}, val frames {len(val_ds)}, device {dev}, amp {amp}")
+    train_ds, select_ds = build_datasets(cfg)   # select split: checkpoint selection only
+    print(f"train frames {len(train_ds)}, select frames {len(select_ds)}, device {dev}, amp {amp}")
 
     gen = torch.Generator()
     gen.manual_seed(seed)
@@ -162,10 +165,10 @@ def main():
             if args.smoke and step >= 5:
                 break
 
-        ap_clean, nd = evaluate(model, val_ds, cfg["eval"]["val_images"], cfg, dev, None, amp)
+        ap_clean, nd = evaluate(model, select_ds, cfg["eval"]["select_clean_images"], cfg, dev, None, amp)
         # Same selection rule for every arm: mean of clean AP50 and L_inf-PGD AP50.
         # Guards against robust overfitting in the adversarial arms (Rice et al., 2020).
-        ap_rob = evaluate(model, val_ds, cfg["eval"]["select_images"], cfg, dev, "linf", amp)[0]
+        ap_rob = evaluate(model, select_ds, cfg["eval"]["select_robust_images"], cfg, dev, "linf", amp)[0]
         score = 0.5 * (ap_clean + ap_rob)
         state = {"model": model.state_dict(), "meta": meta, "epoch": epoch + 1}
         torch.save(state, ROOT / "checkpoints" / f"{name}_last.pth")
@@ -191,11 +194,14 @@ def main():
     model.load_state_dict(torch.load(best_path, map_location=dev, weights_only=False)["model"])
     tests = build_test_sets(cfg)
     final = {"name": name, "best_epoch": best_epoch, "eval_split": "test" if tests else "select"}
-    for cond, ds in (tests or {"select": val_ds}).items():
+    n_clean, n_rob = cfg["eval"]["test_clean_images"], cfg["eval"]["test_robust_images"]
+    for cond, ds in (tests or {"select": select_ds}).items():
         res = {"frames": len(ds),
-               "clean_ap50": evaluate(model, ds, cfg["eval"]["val_images"], cfg, dev, None, amp)[0]}
+               "clean_frames": min(n_clean or len(ds), len(ds)),
+               "robust_frames": min(n_rob or len(ds), len(ds)),
+               "clean_ap50": evaluate(model, ds, n_clean, cfg, dev, None, amp)[0]}
         for rn in cfg["eval"]["robust_norms"]:
-            res[f"{rn}_ap50"] = evaluate(model, ds, cfg["eval"]["robust_images"], cfg, dev, rn, amp)[0]
+            res[f"{rn}_ap50"] = evaluate(model, ds, n_rob, cfg, dev, rn, amp)[0]
         final[cond] = res
     print(json.dumps(final, indent=2))
     with open(log_dir / f"{name}_final.json", "w") as fh:
