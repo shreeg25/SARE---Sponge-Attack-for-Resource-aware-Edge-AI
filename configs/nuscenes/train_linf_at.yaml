@@ -19,6 +19,7 @@ model:
 train:
   epochs: 20                      # upper bound; best epoch is selected on val
   patience: 4                     # stop after 4 epochs without improvement
+  min_epochs: 15                  # never stop before this; best epoch is still the one kept
   batch_size: 4
   lr: 0.01
   momentum: 0.9
