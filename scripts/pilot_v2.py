@@ -40,6 +40,7 @@ import torch
 from torchvision.io import ImageReadMode, read_image
 from torchvision.utils import save_image
 
+from src.logutil import start_log
 from src.models import load_detector, tap_layers
 
 
@@ -294,6 +295,7 @@ if __name__ == "__main__":
     ap.add_argument("--save_adv", action="store_true")
     ap.add_argument("--out_dir", default=None)
     args = ap.parse_args()
+    start_log(ROOT, "pilot_smoke" if args.smoke else "pilot")
 
     cfg = Config()
     if args.smoke:

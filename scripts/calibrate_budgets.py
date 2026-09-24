@@ -8,6 +8,7 @@ then copy the chosen l2_rms / l1_mean into all three train configs.
 
 import argparse
 import copy
+import csv
 import sys
 from pathlib import Path
 
@@ -20,6 +21,7 @@ import yaml
 
 from src.attacks import pgd
 from src.data import build_datasets
+from src.logutil import start_log
 from src.metrics import ap50
 from src.models import load_detector
 
@@ -52,6 +54,8 @@ def main():
     ap.add_argument("--images", type=int, default=100)
     ap.add_argument("--steps", type=int, default=10)
     args = ap.parse_args()
+    stem = Path(args.ckpt).stem
+    start_log(ROOT, f"calibrate_{stem}")
 
     cfg = yaml.safe_load(open(ROOT / args.config))
     ds_cfg = cfg[cfg["dataset"]]
@@ -66,6 +70,12 @@ def main():
     model, _ = load_detector(str(ROOT / args.ckpt), dev)
     ncls = cfg["model"]["num_classes"]
 
+    out_csv = ROOT / "results" / "calibration" / f"{stem}.csv"
+    out_csv.parent.mkdir(parents=True, exist_ok=True)
+    fh = open(out_csv, "w", newline="")
+    w = csv.writer(fh)
+    w.writerow(["norm", "budget_x255", "ap50", "drop", "clean_ap50", "images", "steps"])
+
     clean = ap_under(model, val, idx, cfg["adv"], None, 0, dev, amp, ncls)
     print(f"clean AP50 {clean:.4f}\n")
     print(f"{'norm':5s} {'budget (x/255)':>15s} {'AP50':>8s} {'drop':>8s}")
@@ -75,7 +85,11 @@ def main():
             adv_cfg[key] = v
             a = ap_under(model, val, idx, adv_cfg, norm, args.steps, dev, amp, ncls)
             print(f"{norm:5s} {v * 255:15.2f} {a:8.4f} {clean - a:8.4f}", flush=True)
-    print("\nSend this table back: budgets are matched at the L_inf eps where AP50 is ~half of clean.")
+            w.writerow([norm, round(v * 255, 5), round(a, 5), round(clean - a, 5), round(clean, 5), len(idx), args.steps])
+            fh.flush()
+    fh.close()
+    print(f"\ntable saved to {out_csv}")
+    print("Send this table back: budgets are matched at the L_inf eps where AP50 is ~half of clean.")
 
 
 if __name__ == "__main__":

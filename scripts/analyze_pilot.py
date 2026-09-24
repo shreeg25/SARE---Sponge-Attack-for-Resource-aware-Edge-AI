@@ -12,10 +12,16 @@ Usage:
 
 import argparse
 import csv
+import sys
 from collections import defaultdict
+from pathlib import Path
 
 import numpy as np
 from scipy.stats import wilcoxon
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT))
+from src.logutil import start_log  # noqa: E402
 
 META = {"arm", "seq", "frame", "attack", "eps_255"}
 PRIMARY = ["stage4_rho_0.001", "stage4_svar", "stage4_chent", "n_dets"]
@@ -98,6 +104,7 @@ def main():
     ap.add_argument("--cmp", required=True)
     ap.add_argument("--out", default=None)
     args = ap.parse_args()
+    start_log(ROOT, f"analyze_{args.cmp}_vs_{args.ref}")
 
     rows, metrics = load(args.csv)
     d, clean = deltas(rows, metrics)

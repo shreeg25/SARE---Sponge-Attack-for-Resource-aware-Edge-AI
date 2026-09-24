@@ -34,6 +34,7 @@ from torch.utils.data import DataLoader
 
 from src.attacks import pgd
 from src.data import build_datasets, build_test_sets, collate
+from src.logutil import start_log
 from src.metrics import ap50
 from src.models import build_detector
 
@@ -78,6 +79,7 @@ def main():
     with open(args.config) as fh:
         cfg = yaml.safe_load(fh)
     seed = cfg["seed"] if args.seed is None else args.seed
+    start_log(ROOT, f"train_{cfg['dataset']}_{cfg['arm']}_s{seed}" + ("_smoke" if args.smoke else ""))
     seed_all(seed)
 
     ds_cfg = cfg[cfg["dataset"]]

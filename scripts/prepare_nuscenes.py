@@ -35,6 +35,9 @@ from nuscenes.utils.geometry_utils import view_points
 from nuscenes.utils.splits import create_splits_scenes
 
 ROOT = Path(__file__).resolve().parents[1]
+import sys
+sys.path.insert(0, str(ROOT))
+from src.logutil import start_log  # noqa: E402
 CLASSES = {1: "pedestrian", 2: "vehicle", 3: "cyclist"}
 PED_KEEP = {"adult", "child", "construction_worker", "police_officer"}
 VIS_KEEP = {"2", "3", "4"}          # >= 40% visible across the camera rig
@@ -97,6 +100,7 @@ def main():
                     help="index frames whose image file is absent (default: skip them, "
                          "so a partial blob download still produces a usable index)")
     args = ap.parse_args()
+    start_log(ROOT, f"prepare_{args.version}")
 
     root = Path(args.root) if Path(args.root).is_absolute() else ROOT / args.root
     nusc = NuScenes(version=args.version, dataroot=str(root), verbose=True)
