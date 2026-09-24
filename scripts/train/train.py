@@ -35,7 +35,7 @@ from torch.utils.data import DataLoader
 from src.attacks import pgd
 from src.data import build_datasets, build_test_sets, collate
 from src.logutil import start_log
-from src.metrics import ap50
+from src.metrics import detection_report
 from src.models import build_detector
 
 
@@ -46,13 +46,16 @@ def seed_all(s):
     torch.cuda.manual_seed_all(s)
 
 
+CLASS_NAMES = {"nuscenes": {1: "pedestrian", 2: "vehicle", 3: "cyclist"}, "mot17": {1: "pedestrian"}}
+
+
 def evaluate(model, ds, n, cfg, dev, norm=None, amp=False):
-    """AP50 on n evenly spaced frames of ds (all frames if n is null), clean or
-    under PGD with `norm`. Evenly spaced = deterministic, so every arm sees the
-    same frames.
-    Also returns mean detections/frame above the 0.4 forwarding threshold."""
+    """Detection report (AP50 overall and per class; precision, recall, F1 and
+    false positives/frame at the 0.4 forwarding threshold) on n evenly spaced
+    frames of ds (all frames if n is null), clean or under PGD with `norm`.
+    Evenly spaced = deterministic, so every arm sees the same frames."""
     idx = np.linspace(0, len(ds) - 1, num=min(n or len(ds), len(ds))).astype(int)
-    preds, gts, ndets = [], [], []
+    preds, gts = [], []
     for i in idx:
         img, tgt = ds[int(i)]
         img = img.to(dev)
@@ -64,9 +67,8 @@ def evaluate(model, ds, n, cfg, dev, norm=None, amp=False):
             out = model([img])[0]
         preds.append({k: v.cpu() for k, v in out.items()})
         gts.append({k: v.cpu() for k, v in tgt.items()})
-        ndets.append(int((out["scores"] > 0.4).sum()))
     model.train()
-    return ap50(preds, gts, cfg["model"]["num_classes"]), float(np.mean(ndets))
+    return detection_report(preds, gts, cfg["model"]["num_classes"], CLASS_NAMES.get(cfg["dataset"]))
 
 
 def main():
@@ -74,6 +76,8 @@ def main():
     ap.add_argument("--config", required=True)
     ap.add_argument("--seed", type=int, default=None)
     ap.add_argument("--smoke", action="store_true", help="5 iterations + tiny eval, to catch errors fast")
+    ap.add_argument("--eval-only", action="store_true",
+                    help="skip training; rerun the final test evaluation on the saved best checkpoint")
     args = ap.parse_args()
 
     with open(args.config) as fh:
@@ -128,7 +132,7 @@ def main():
     step, t0, skipped = 0, time.time(), 0
     best_score, best_epoch, bad = -1.0, 0, 0
     best_path = ROOT / "checkpoints" / f"{name}.pth"
-    for epoch in range(tr["epochs"]):
+    for epoch in range(0 if args.eval_only else tr["epochs"]):
         for imgs, tgts in dl:
             imgs = [i.to(dev, non_blocking=True) for i in imgs]
             tgts = [{k: v.to(dev) for k, v in t.items()} for t in tgts]
@@ -157,7 +161,7 @@ def main():
             step += 1
 
             if step % 20 == 0 or args.smoke:
-                rec = {"step": step, "epoch": epoch, "lr": opt.param_groups[0]["lr"],
+                rec = {"step": step, "epoch": epoch + 1, "lr": opt.param_groups[0]["lr"],
                        "loss_clean": loss_clean.item(), "norm": norm,
                        "loss_adv": None if loss_adv is None else loss_adv.item(),
                        "s_per_it": (time.time() - t0) / step, "skipped": skipped}
@@ -167,10 +171,11 @@ def main():
             if args.smoke and step >= 5:
                 break
 
-        ap_clean, nd = evaluate(model, select_ds, cfg["eval"]["select_clean_images"], cfg, dev, None, amp)
+        sel = evaluate(model, select_ds, cfg["eval"]["select_clean_images"], cfg, dev, None, amp)
+        ap_clean = sel["ap50"]
         # Same selection rule for every arm: mean of clean AP50 and L_inf-PGD AP50.
         # Guards against robust overfitting in the adversarial arms (Rice et al., 2020).
-        ap_rob = evaluate(model, select_ds, cfg["eval"]["select_robust_images"], cfg, dev, "linf", amp)[0]
+        ap_rob = evaluate(model, select_ds, cfg["eval"]["select_robust_images"], cfg, dev, "linf", amp)["ap50"]
         score = 0.5 * (ap_clean + ap_rob)
         state = {"model": model.state_dict(), "meta": meta, "epoch": epoch + 1}
         torch.save(state, ROOT / "checkpoints" / f"{name}_last.pth")
@@ -179,21 +184,27 @@ def main():
             torch.save(state, best_path)
         else:
             bad += 1
-        rec = {"epoch": epoch + 1, "val_ap50": ap_clean, "val_linf_ap50": ap_rob,
+        rec = {"epoch": epoch + 1, "select_ap50": ap_clean, "select_linf_ap50": ap_rob,
                "select_score": score, "best_epoch": best_epoch,
-               "val_dets_per_frame": nd, "elapsed_min": (time.time() - t0) / 60}
+               "precision": sel["precision"], "recall": sel["recall"], "f1": sel["f1"],
+               "fp_per_frame": sel["fp_per_frame"], "dets_per_frame": sel["dets_per_frame"],
+               **{k: v for k, v in sel.items() if k.startswith("ap50_")},
+               "elapsed_min": (time.time() - t0) / 60}
         print(json.dumps(rec))
         log.write(json.dumps(rec) + "\n")
         log.flush()
         if args.smoke:
             break
-        if bad >= tr["patience"]:
+        if bad >= tr["patience"] and epoch + 1 >= tr.get("min_epochs", 0):
             print(f"early stop: no improvement for {bad} epochs, best epoch {best_epoch}")
             break
 
     # Did hardening work? Clean vs PGD AP50 under every norm, on the selected checkpoint,
     # measured on held-out test scenes per condition (select split only for MOT17).
-    model.load_state_dict(torch.load(best_path, map_location=dev, weights_only=False)["model"])
+    ckpt = torch.load(best_path, map_location=dev, weights_only=False)
+    model.load_state_dict(ckpt["model"])
+    if args.eval_only:
+        best_epoch = ckpt["epoch"]
     tests = build_test_sets(cfg)
     final = {"name": name, "best_epoch": best_epoch, "eval_split": "test" if tests else "select"}
     n_clean, n_rob = cfg["eval"]["test_clean_images"], cfg["eval"]["test_robust_images"]
@@ -201,11 +212,23 @@ def main():
         res = {"frames": len(ds),
                "clean_frames": min(n_clean or len(ds), len(ds)),
                "robust_frames": min(n_rob or len(ds), len(ds)),
-               "clean_ap50": evaluate(model, ds, n_clean, cfg, dev, None, amp)[0]}
+               "clean": evaluate(model, ds, n_clean, cfg, dev, None, amp)}
         for rn in cfg["eval"]["robust_norms"]:
-            res[f"{rn}_ap50"] = evaluate(model, ds, n_rob, cfg, dev, rn, amp)[0]
+            res[rn] = evaluate(model, ds, n_rob, cfg, dev, rn, amp)
         final[cond] = res
-    print(json.dumps(final, indent=2))
+
+    # Readable summary for the log; full numbers are in the JSON.
+    print(f"\n{name}  best epoch {best_epoch}  ({final['eval_split']} split)")
+    print(f"{'condition':11s} {'attack':6s} {'frames':>6s} {'AP50':>6s} {'P':>6s} {'R':>6s} {'F1':>6s} "
+          f"{'FP/frm':>7s} {'det/frm':>7s}")
+    for cond, res in final.items():
+        if not isinstance(res, dict):
+            continue
+        for atk in ["clean"] + list(cfg["eval"]["robust_norms"]):
+            r = res[atk]
+            print(f"{cond:11s} {atk:6s} {r['frames']:6d} {r['ap50']:6.3f} {r['precision']:6.3f} "
+                  f"{r['recall']:6.3f} {r['f1']:6.3f} {r['fp_per_frame']:7.2f} {r['dets_per_frame']:7.2f}")
+    print()
     with open(log_dir / f"{name}_final.json", "w") as fh:
         json.dump(final, fh, indent=2)
     log.close()
