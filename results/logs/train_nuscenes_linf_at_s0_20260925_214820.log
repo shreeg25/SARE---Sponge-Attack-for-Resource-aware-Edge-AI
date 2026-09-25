@@ -1,3 +1,6 @@
 # started 2026-09-25T21:48:20
 # cmd: scripts/train/train.py --config configs/nuscenes/train_linf_at.yaml
 logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\train_nuscenes_linf_at_s0_20260925_214820.log
+train frames 7334, select frames 3964, device cuda, amp True
+{"step": 20, "epoch": 1, "lr": 0.0007000000000000001, "loss_clean": 0.7635493278503418, "norm": "linf", "loss_adv": 0.9352559447288513, "s_per_it": 1.8188565015792846, "skipped": 0}
+{"step": 40, "epoch": 1, "lr": 0.0013666666666666666, "loss_clean": 0.73334801197052, "norm": "linf", "loss_adv": 0.7771928906440735, "s_per_it": 1.479528659582138, "skipped": 0}
