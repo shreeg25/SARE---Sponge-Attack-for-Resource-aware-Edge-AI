@@ -137,26 +137,33 @@ def main():
             imgs = [i.to(dev, non_blocking=True) for i in imgs]
             tgts = [{k: v.to(dev) for k, v in t.items()} for t in tgts]
 
+            # Same gradient as backward() on (clean + lambda*adv), but the clean graph is
+            # freed before the attack runs, so the two graphs never sit in GPU memory together.
+            opt.zero_grad(set_to_none=True)
             with torch.autocast(device_type=dev, dtype=torch.bfloat16, enabled=amp):
                 loss_clean = sum(model(imgs, tgts).values())
-            loss, loss_adv, norm = loss_clean, None, None
-            if norms:
-                norm = norms[step % len(norms)]
-                adv = pgd(model, imgs, tgts, norm, adv_cfg, adv_cfg["train_steps"], amp,
-                          objective=adv_cfg.get("objective", "all"),
-                          bg_mask_ratio=adv_cfg.get("bg_mask_ratio"))
-                with torch.autocast(device_type=dev, dtype=torch.bfloat16, enabled=amp):
-                    loss_adv = sum(model(adv, tgts).values())
-                loss = loss_clean + adv_cfg["lambda"] * loss_adv
+            loss_adv, norm = None, None
+            nonfinite = not torch.isfinite(loss_clean)
+            if not nonfinite:
+                loss_clean.backward()
+                if norms:
+                    norm = norms[step % len(norms)]
+                    adv = pgd(model, imgs, tgts, norm, adv_cfg, adv_cfg["train_steps"], amp,
+                              objective=adv_cfg.get("objective", "all"),
+                              bg_mask_ratio=adv_cfg.get("bg_mask_ratio"))
+                    with torch.autocast(device_type=dev, dtype=torch.bfloat16, enabled=amp):
+                        loss_adv = sum(model(adv, tgts).values())
+                    if torch.isfinite(loss_adv):
+                        (adv_cfg["lambda"] * loss_adv).backward()
+                    else:
+                        nonfinite = True
 
-            if not torch.isfinite(loss):
+            if nonfinite:
                 skipped += 1
                 opt.zero_grad(set_to_none=True)
                 step += 1
                 sched.step()
                 continue
-            opt.zero_grad(set_to_none=True)
-            loss.backward()
             torch.nn.utils.clip_grad_norm_(params, tr["grad_clip"])
             opt.step()
             sched.step()
