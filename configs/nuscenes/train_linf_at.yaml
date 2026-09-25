@@ -6,7 +6,7 @@ dataset: nuscenes
 nuscenes:
   root: data/nuscenes              # contains samples/ and v1.0-*/
   index: data/nuscenes_2d.json     # written by scripts/prepare_nuscenes.py
-  train_stride: 2                  # keyframes are 0.5 s apart; stride 2 halves near-duplicates
+  train_stride: 4                  # keyframes are 0.5 s apart; stride 4 = one frame every 2 s
   val_stride: 1
 
 model:
@@ -32,10 +32,10 @@ train:
 adv:
   norms: [linf]
   lambda: 1.0
-  train_steps: 3
+  train_steps: 2
   linf_eps: 0.0313725             # 8/255
-  l2_rms: 0.0039216               # 1/255 per-pixel RMS  -> eps_l2 = l2_rms * sqrt(C*H*W)
-  l1_mean: 0.0019608              # 0.5/255 per-pixel mean -> eps_l1 = l1_mean * C*H*W
+  l2_rms: 0.0078431               # 2/255 per-pixel RMS, calibrated to match L_inf 8/255
+  l1_mean: 0.0009804              # 0.25/255 per-pixel mean, calibrated to match L_inf 8/255
   l1_sparsity: 0.99               # L1 steps touch the top 1% of gradient coordinates
 
 eval:

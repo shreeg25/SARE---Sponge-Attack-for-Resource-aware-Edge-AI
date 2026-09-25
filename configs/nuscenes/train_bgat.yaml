@@ -1,0 +1,49 @@
+# Shared recipe. The three train_*.yaml files must differ ONLY in `arm` and `adv.norms`.
+arm: bgat
+seed: 0
+dataset: nuscenes
+
+nuscenes:
+  root: data/nuscenes              # contains samples/ and v1.0-*/
+  index: data/nuscenes_2d.json     # written by scripts/prepare_nuscenes.py
+  train_stride: 4                  # keyframes are 0.5 s apart; stride 4 = one frame every 2 s
+  val_stride: 1
+
+model:
+  arch: mobilenet_v3
+  num_classes: 4                  # background + pedestrian, vehicle, cyclist
+  min_size: 800
+  max_size: 1333
+  trainable_layers: 3
+
+train:
+  epochs: 20                      # upper bound; best epoch is selected on val
+  patience: 4                     # stop after 4 epochs without improvement
+  min_epochs: 15                  # never stop before this; best epoch is still the one kept
+  batch_size: 4
+  lr: 0.01
+  momentum: 0.9
+  weight_decay: 1.0e-4
+  warmup_iters: 300
+  grad_clip: 10.0
+  num_workers: 4
+  amp: true                       # bf16 autocast, CUDA only
+
+adv:
+  norms: [linf]
+  objective: objectness            # Underload-style: attack RPN objectness only
+  bg_mask_ratio: 0.9               # perturb background only; GT boxes (x0.9) protected
+  lambda: 1.0
+  train_steps: 2
+  linf_eps: 0.0313725             # 8/255
+  l2_rms: 0.0078431               # 2/255 per-pixel RMS, calibrated to match L_inf 8/255
+  l1_mean: 0.0009804              # 0.25/255 per-pixel mean, calibrated to match L_inf 8/255
+  l1_sparsity: 0.99               # L1 steps touch the top 1% of gradient coordinates
+
+eval:
+  select_clean_images: 200        # per-epoch clean AP50 on the select split
+  select_robust_images: 50        # per-epoch L_inf-PGD AP50 on the select split
+  test_clean_images: null         # null = every test frame (headline clean AP50)
+  test_robust_images: 100         # fixed, evenly spaced subset for PGD AP50, same frames for every arm
+  robust_steps: 10
+  robust_norms: [linf, l2, l1]
