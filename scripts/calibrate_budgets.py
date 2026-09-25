@@ -22,7 +22,7 @@ import yaml
 from src.attacks import pgd
 from src.data import build_datasets
 from src.logutil import start_log
-from src.metrics import ap50
+from src.metrics import detection_report
 from src.models import load_detector
 
 GRID = {
@@ -44,7 +44,7 @@ def ap_under(model, ds, idx, adv_cfg, norm, steps, dev, amp, num_classes):
             out = model([img])[0]
         preds.append({k: v.cpu() for k, v in out.items()})
         gts.append({k: v.cpu() for k, v in tgt.items()})
-    return ap50(preds, gts, num_classes)
+    return detection_report(preds, gts, num_classes)
 
 
 def main():
@@ -74,18 +74,25 @@ def main():
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     fh = open(out_csv, "w", newline="")
     w = csv.writer(fh)
-    w.writerow(["norm", "budget_x255", "ap50", "drop", "clean_ap50", "images", "steps"])
+    cols = ["ap50", "precision", "recall", "f1", "fp_per_frame", "dets_per_frame"]
+    w.writerow(["norm", "budget_x255", *cols, "ap50_drop", "images", "steps"])
 
-    clean = ap_under(model, val, idx, cfg["adv"], None, 0, dev, amp, ncls)
-    print(f"clean AP50 {clean:.4f}\n")
-    print(f"{'norm':5s} {'budget (x/255)':>15s} {'AP50':>8s} {'drop':>8s}")
+    c = ap_under(model, val, idx, cfg["adv"], None, 0, dev, amp, ncls)
+    clean = c["ap50"]
+    w.writerow(["clean", 0, *[round(c[k], 5) for k in cols], 0, len(idx), 0])
+    head = f"{'norm':5s} {'budget(x/255)':>13s} {'AP50':>7s} {'P':>6s} {'R':>6s} {'F1':>6s} {'FP/frm':>7s} {'det/frm':>7s} {'drop':>7s}"
+    row = lambda nm, b, r: (f"{nm:5s} {b:13.4f} {r['ap50']:7.4f} {r['precision']:6.3f} {r['recall']:6.3f} "
+                            f"{r['f1']:6.3f} {r['fp_per_frame']:7.2f} {r['dets_per_frame']:7.2f} {clean - r['ap50']:7.4f}")
+    print(head)
+    print(row("clean", 0.0, c), flush=True)
     for norm, (key, values) in GRID.items():
         for v in values:
             adv_cfg = copy.deepcopy(cfg["adv"])
             adv_cfg[key] = v
-            a = ap_under(model, val, idx, adv_cfg, norm, args.steps, dev, amp, ncls)
-            print(f"{norm:5s} {v * 255:15.2f} {a:8.4f} {clean - a:8.4f}", flush=True)
-            w.writerow([norm, round(v * 255, 5), round(a, 5), round(clean - a, 5), round(clean, 5), len(idx), args.steps])
+            r = ap_under(model, val, idx, adv_cfg, norm, args.steps, dev, amp, ncls)
+            print(row(norm, v * 255, r), flush=True)
+            w.writerow([norm, round(v * 255, 5), *[round(r[k], 5) for k in cols],
+                        round(clean - r["ap50"], 5), len(idx), args.steps])
             fh.flush()
     fh.close()
     print(f"\ntable saved to {out_csv}")
