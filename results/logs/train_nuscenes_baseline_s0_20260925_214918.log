@@ -1,0 +1,3 @@
+# started 2026-09-25T21:49:18
+# cmd: scripts/train/train.py --config configs/nuscenes/train_baseline.yaml
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\train_nuscenes_baseline_s0_20260925_214918.log

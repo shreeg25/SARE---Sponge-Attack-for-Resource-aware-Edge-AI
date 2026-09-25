@@ -1,0 +1,9 @@
+# started 2026-09-25T21:20:52
+# cmd: scripts/train/train.py --config configs/nuscenes/train_baseline.yaml
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\train_nuscenes_baseline_s0_20260925_212052.log
+train frames 7334, select frames 3964, device cuda, amp True
+{"step": 20, "epoch": 1, "lr": 0.0007000000000000001, "loss_clean": 0.6509796380996704, "norm": null, "loss_adv": null, "s_per_it": 0.8295048832893371, "skipped": 0}
+{"step": 40, "epoch": 1, "lr": 0.0013666666666666666, "loss_clean": 0.8021318316459656, "norm": null, "loss_adv": null, "s_per_it": 0.5099666059017182, "skipped": 0}
+{"step": 60, "epoch": 1, "lr": 0.0020333333333333336, "loss_clean": 0.5271637439727783, "norm": null, "loss_adv": null, "s_per_it": 0.4027282555898031, "skipped": 0}
+{"step": 80, "epoch": 1, "lr": 0.0027, "loss_clean": 0.7783330678939819, "norm": null, "loss_adv": null, "s_per_it": 0.349856299161911, "skipped": 0}
+{"step": 100, "epoch": 1, "lr": 0.0033666666666666667, "loss_clean": 0.7967253923416138, "norm": null, "loss_adv": null, "s_per_it": 0.31903030157089235, "skipped": 0}
