@@ -9,3 +9,33 @@ train frames 7334, select frames 3964, device cuda, amp True
 {"step": 100, "epoch": 1, "lr": 0.0033666666666666667, "loss_clean": 0.8453695178031921, "norm": "linf", "loss_adv": 0.7894555926322937, "s_per_it": 1.789770233631134, "skipped": 0}
 {"step": 120, "epoch": 1, "lr": 0.004033333333333333, "loss_clean": 0.8254992961883545, "norm": "linf", "loss_adv": 0.7720591425895691, "s_per_it": 1.758829838037491, "skipped": 0}
 {"step": 140, "epoch": 1, "lr": 0.0047, "loss_clean": 0.7007632255554199, "norm": "linf", "loss_adv": 0.688198447227478, "s_per_it": 1.7397459745407104, "skipped": 0}
+{"step": 160, "epoch": 1, "lr": 0.005366666666666666, "loss_clean": 0.33688366413116455, "norm": "linf", "loss_adv": 0.33709460496902466, "s_per_it": 1.7255607768893242, "skipped": 0}
+{"step": 180, "epoch": 1, "lr": 0.006033333333333334, "loss_clean": 0.3401452302932739, "norm": "linf", "loss_adv": 0.3626982867717743, "s_per_it": 1.7143172343571982, "skipped": 0}
+{"step": 200, "epoch": 1, "lr": 0.0067, "loss_clean": 0.5060497522354126, "norm": "linf", "loss_adv": 0.6458495259284973, "s_per_it": 1.704340000152588, "skipped": 0}
+{"step": 220, "epoch": 1, "lr": 0.007366666666666667, "loss_clean": 0.6373367309570312, "norm": "linf", "loss_adv": 0.898958146572113, "s_per_it": 1.6966949874704533, "skipped": 0}
+{"step": 240, "epoch": 1, "lr": 0.008033333333333333, "loss_clean": 0.7065099477767944, "norm": "linf", "loss_adv": 1.0284099578857422, "s_per_it": 1.6918628404537837, "skipped": 0}
+{"step": 260, "epoch": 1, "lr": 0.0087, "loss_clean": 0.48823797702789307, "norm": "linf", "loss_adv": 0.4508047103881836, "s_per_it": 1.6857221135726341, "skipped": 0}
+{"step": 280, "epoch": 1, "lr": 0.009366666666666667, "loss_clean": 0.9094110131263733, "norm": "linf", "loss_adv": 0.9562606811523438, "s_per_it": 1.6799683238778795, "skipped": 0}
+{"step": 300, "epoch": 1, "lr": 0.01, "loss_clean": 0.8299620151519775, "norm": "linf", "loss_adv": 0.741050660610199, "s_per_it": 1.6752439435323079, "skipped": 0}
+{"step": 320, "epoch": 1, "lr": 0.009999992534620528, "loss_clean": 0.5137150287628174, "norm": "linf", "loss_adv": 0.7329930663108826, "s_per_it": 1.6736351989209652, "skipped": 0}
+{"step": 340, "epoch": 1, "lr": 0.009999970138504405, "loss_clean": 0.6039234399795532, "norm": "linf", "loss_adv": 0.9243969321250916, "s_per_it": 1.6710194188005785, "skipped": 0}
+{"step": 360, "epoch": 1, "lr": 0.009999932811718506, "loss_clean": 0.3875599503517151, "norm": "linf", "loss_adv": 0.43501928448677063, "s_per_it": 1.667321033610238, "skipped": 0}
+{"step": 380, "epoch": 1, "lr": 0.009999880554374299, "loss_clean": 0.6323487162590027, "norm": "linf", "loss_adv": 0.6857832670211792, "s_per_it": 1.6636672816778484, "skipped": 0}
+{"step": 400, "epoch": 1, "lr": 0.00999981336662783, "loss_clean": 0.4662873148918152, "norm": "linf", "loss_adv": 0.5619087815284729, "s_per_it": 1.6607431703805924, "skipped": 0}
+{"step": 420, "epoch": 1, "lr": 0.009999731248679733, "loss_clean": 0.7362766265869141, "norm": "linf", "loss_adv": 0.7516975402832031, "s_per_it": 1.6585226938838051, "skipped": 0}
+{"step": 440, "epoch": 1, "lr": 0.009999634200775223, "loss_clean": 0.46035951375961304, "norm": "linf", "loss_adv": 0.6187905669212341, "s_per_it": 1.656556323441592, "skipped": 0}
+{"step": 460, "epoch": 1, "lr": 0.009999522223204101, "loss_clean": 0.5048403739929199, "norm": "linf", "loss_adv": 0.6312939524650574, "s_per_it": 1.6546684456908185, "skipped": 0}
+{"step": 480, "epoch": 1, "lr": 0.009999395316300747, "loss_clean": 0.5361589193344116, "norm": "linf", "loss_adv": 0.8483600616455078, "s_per_it": 1.6532096892595292, "skipped": 0}
+Traceback (most recent call last):
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\train\train.py", line 238, in <module>
+    main()
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\train\train.py", line 138, in main
+    tgts = [{k: v.to(dev) for k, v in t.items()} for t in tgts]
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\train\train.py", line 138, in <listcomp>
+    tgts = [{k: v.to(dev) for k, v in t.items()} for t in tgts]
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\train\train.py", line 138, in <dictcomp>
+    tgts = [{k: v.to(dev) for k, v in t.items()} for t in tgts]
+                ^^^^^^^^^
+KeyboardInterrupt
