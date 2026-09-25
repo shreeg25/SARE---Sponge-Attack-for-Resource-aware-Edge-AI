@@ -1,0 +1,31 @@
+# started 2026-09-25T16:46:17
+# cmd: scripts/train/train.py --config configs/nuscenes/train_baseline.yaml
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\train_nuscenes_baseline_s0_20260925_164617.log
+train frames 7334, select frames 3964, device cuda, amp True
+Traceback (most recent call last):
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\train\train.py", line 238, in <module>
+    main()
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\train\train.py", line 136, in main
+    for imgs, tgts in dl:
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\utils\data\dataloader.py", line 486, in __iter__
+    self._iterator = self._get_iterator()
+                     ^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\utils\data\dataloader.py", line 422, in _get_iterator
+    return _MultiProcessingDataLoaderIter(self)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\utils\data\dataloader.py", line 1146, in __init__
+    w.start()
+  File "C:\Users\Shree\AppData\Local\Programs\Python\Python311\Lib\multiprocessing\process.py", line 121, in start
+    self._popen = self._Popen(self)
+                  ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shree\AppData\Local\Programs\Python\Python311\Lib\multiprocessing\context.py", line 224, in _Popen
+    return _default_context.get_context().Process._Popen(process_obj)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shree\AppData\Local\Programs\Python\Python311\Lib\multiprocessing\context.py", line 336, in _Popen
+    return Popen(process_obj)
+           ^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Shree\AppData\Local\Programs\Python\Python311\Lib\multiprocessing\popen_spawn_win32.py", line 94, in __init__
+    reduction.dump(process_obj, to_child)
+  File "C:\Users\Shree\AppData\Local\Programs\Python\Python311\Lib\multiprocessing\reduction.py", line 60, in dump
+    ForkingPickler(file, protocol).dump(obj)
+KeyboardInterrupt
