@@ -28,7 +28,8 @@ from src.models import load_detector
 GRID = {
     "linf": ("linf_eps", [0.25 / 255, 0.5 / 255, 1 / 255, 2 / 255, 4 / 255, 8 / 255]),
     "l2": ("l2_rms", [0.0625 / 255, 0.125 / 255, 0.25 / 255, 0.5 / 255, 1 / 255, 2 / 255]),
-    "l1": ("l1_mean", [0.03125 / 255, 0.0625 / 255, 0.125 / 255, 0.25 / 255, 0.5 / 255, 1 / 255]),
+    "l1": ("l1_mean", [0.00390625 / 255, 0.0078125 / 255, 0.015625 / 255, 0.03125 / 255,
+                       0.0625 / 255, 0.125 / 255, 0.25 / 255, 0.5 / 255, 1 / 255]),
 }
 
 
@@ -53,6 +54,8 @@ def main():
     ap.add_argument("--config", default="configs/train_baseline.yaml")
     ap.add_argument("--images", type=int, default=100)
     ap.add_argument("--steps", type=int, default=10)
+    ap.add_argument("--norms", nargs="+", default=list(GRID), choices=list(GRID),
+                    help="only run these norms, e.g. --norms l1")
     args = ap.parse_args()
     stem = Path(args.ckpt).stem
     start_log(ROOT, f"calibrate_{stem}")
@@ -70,7 +73,8 @@ def main():
     model, _ = load_detector(str(ROOT / args.ckpt), dev)
     ncls = cfg["model"]["num_classes"]
 
-    out_csv = ROOT / "results" / "calibration" / f"{stem}.csv"
+    suffix = "" if set(args.norms) == set(GRID) else "_" + "_".join(args.norms)
+    out_csv = ROOT / "results" / "calibration" / f"{stem}{suffix}.csv"   # partial reruns never overwrite the full table
     out_csv.parent.mkdir(parents=True, exist_ok=True)
     fh = open(out_csv, "w", newline="")
     w = csv.writer(fh)
@@ -86,6 +90,8 @@ def main():
     print(head)
     print(row("clean", 0.0, c), flush=True)
     for norm, (key, values) in GRID.items():
+        if norm not in args.norms:
+            continue
         for v in values:
             adv_cfg = copy.deepcopy(cfg["adv"])
             adv_cfg[key] = v
