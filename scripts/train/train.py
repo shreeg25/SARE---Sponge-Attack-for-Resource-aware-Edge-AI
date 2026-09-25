@@ -142,7 +142,9 @@ def main():
             loss, loss_adv, norm = loss_clean, None, None
             if norms:
                 norm = norms[step % len(norms)]
-                adv = pgd(model, imgs, tgts, norm, adv_cfg, adv_cfg["train_steps"], amp)
+                adv = pgd(model, imgs, tgts, norm, adv_cfg, adv_cfg["train_steps"], amp,
+                          objective=adv_cfg.get("objective", "all"),
+                          bg_mask_ratio=adv_cfg.get("bg_mask_ratio"))
                 with torch.autocast(device_type=dev, dtype=torch.bfloat16, enabled=amp):
                     loss_adv = sum(model(adv, tgts).values())
                 loss = loss_clean + adv_cfg["lambda"] * loss_adv
