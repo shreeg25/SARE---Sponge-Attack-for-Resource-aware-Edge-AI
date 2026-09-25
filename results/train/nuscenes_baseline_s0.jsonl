@@ -1767,3 +1767,4 @@
 {"step": 80, "epoch": 1, "lr": 0.0027, "loss_clean": 0.5006867051124573, "norm": null, "loss_adv": null, "s_per_it": 0.6504704356193542, "skipped": 0}
 {"step": 100, "epoch": 1, "lr": 0.0033666666666666667, "loss_clean": 0.9875364303588867, "norm": null, "loss_adv": null, "s_per_it": 0.6030485510826111, "skipped": 0}
 {"step": 120, "epoch": 1, "lr": 0.004033333333333333, "loss_clean": 0.5673424005508423, "norm": null, "loss_adv": null, "s_per_it": 0.5709307789802551, "skipped": 0}
+{"step": 140, "epoch": 1, "lr": 0.0047, "loss_clean": 1.0633610486984253, "norm": null, "loss_adv": null, "s_per_it": 0.5404117039271763, "skipped": 0}
