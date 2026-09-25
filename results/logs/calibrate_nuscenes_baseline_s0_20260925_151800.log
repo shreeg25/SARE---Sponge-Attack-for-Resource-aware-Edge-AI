@@ -1,0 +1,37 @@
+# started 2026-09-25T15:18:00
+# cmd: scripts/calibrate_budgets.py --config configs/nuscenes/train_baseline.yaml --ckpt checkpoints/nuscenes_baseline_s0.pth
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\calibrate_nuscenes_baseline_s0_20260925_151800.log
+clean AP50 0.5732
+
+norm   budget (x/255)     AP50     drop
+linf             0.25   0.2324   0.3408
+linf             0.50   0.0482   0.5250
+linf             1.00   0.0030   0.5703
+linf             2.00   0.0004   0.5728
+linf             4.00   0.0000   0.5732
+linf             8.00   0.0000   0.5732
+l2               0.06   0.2295   0.3437
+l2               0.12   0.0724   0.5008
+l2               0.25   0.0157   0.5576
+l2               0.50   0.0017   0.5715
+l2               1.00   0.0000   0.5732
+Traceback (most recent call last):
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\calibrate_budgets.py", line 96, in <module>
+    fh.flush()
+^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\calibrate_budgets.py", line 86, in main
+    print(head)
+                
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\calibrate_budgets.py", line 41, in ap_under
+    img = pgd(model, [img], [tgt], norm, adv_cfg, steps, amp)[0]
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\src\attacks.py", line 83, in pgd
+    deltas = [((x + _step(d, g.float(), norm, e, steps, sparsity)).clamp(0, 1) - x).detach()
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\src\attacks.py", line 83, in <listcomp>
+    deltas = [((x + _step(d, g.float(), norm, e, steps, sparsity)).clamp(0, 1) - x).detach()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\src\attacks.py", line 50, in _step
+    return d * min(1.0, eps / (float(d.norm()) + 1e-12))
+                               ^^^^^^^^^^^^^^^
+KeyboardInterrupt

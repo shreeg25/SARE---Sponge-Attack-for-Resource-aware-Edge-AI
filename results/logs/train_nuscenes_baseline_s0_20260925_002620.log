@@ -1,0 +1,24 @@
+# started 2026-09-25T00:26:20
+# cmd: scripts/train/train.py --config configs/nuscenes/train_baseline.yaml --eval-only
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\train_nuscenes_baseline_s0_20260925_002620.log
+train frames 7334, select frames 3964, device cuda, amp True
+
+nuscenes_baseline_s0  best epoch 8  (test split)
+condition   attack frames   AP50      P      R     F1  FP/frm det/frm
+day         clean    4449  0.564  0.705  0.671  0.688    1.50    5.09
+day         linf      100  0.000  0.000  0.000  0.000   44.91   44.91
+day         l2        100  0.000  0.000  0.002  0.001   20.41   20.42
+day         l1        100  0.000  0.008  0.024  0.012   17.01   17.14
+night       clean    3345  0.214  0.523  0.364  0.429    1.16    2.43
+night       linf      100  0.000  0.000  0.000  0.000   54.13   54.13
+night       l2        100  0.000  0.000  0.000  0.000   21.90   21.90
+night       l1        100  0.000  0.000  0.000  0.000   15.21   15.21
+rain        clean    6028  0.377  0.646  0.638  0.642    2.14    6.05
+rain        linf      100  0.000  0.000  0.000  0.000   39.66   39.66
+rain        l2        100  0.000  0.000  0.002  0.001   21.09   21.10
+rain        l1        100  0.000  0.002  0.007  0.003   17.57   17.61
+night_rain  clean     642  0.168  0.479  0.317  0.382    1.20    2.30
+night_rain  linf      100  0.000  0.000  0.000  0.000   50.72   50.72
+night_rain  l2        100  0.000  0.000  0.000  0.000   19.91   19.91
+night_rain  l1        100  0.000  0.000  0.000  0.000   15.39   15.39
+

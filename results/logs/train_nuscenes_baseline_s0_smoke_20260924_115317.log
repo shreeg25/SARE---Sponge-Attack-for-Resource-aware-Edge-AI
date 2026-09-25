@@ -1,0 +1,51 @@
+# started 2026-09-24T11:53:17
+# cmd: scripts/train/train.py --config configs/nuscenes/train_baseline.yaml --smoke
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\train_nuscenes_baseline_s0_smoke_20260924_115317.log
+train frames 7334, select frames 3964, device cuda, amp True
+{"step": 1, "epoch": 0, "lr": 6.666666666666667e-05, "loss_clean": 2.684335708618164, "norm": null, "loss_adv": null, "s_per_it": 12.116495609283447, "skipped": 0}
+{"step": 2, "epoch": 0, "lr": 0.0001, "loss_clean": 2.2424442768096924, "norm": null, "loss_adv": null, "s_per_it": 6.169662356376648, "skipped": 0}
+{"step": 3, "epoch": 0, "lr": 0.00013333333333333334, "loss_clean": 2.0320117473602295, "norm": null, "loss_adv": null, "s_per_it": 4.1784294446309405, "skipped": 0}
+{"step": 4, "epoch": 0, "lr": 0.00016666666666666666, "loss_clean": 2.1899399757385254, "norm": null, "loss_adv": null, "s_per_it": 3.186356544494629, "skipped": 0}
+{"step": 5, "epoch": 0, "lr": 0.0002, "loss_clean": 1.8367810249328613, "norm": null, "loss_adv": null, "s_per_it": 2.5882551670074463, "skipped": 0}
+{"epoch": 1, "val_ap50": 0.008559791201792245, "val_linf_ap50": 0.0, "select_score": 0.0042798956008961225, "best_epoch": 1, "val_dets_per_frame": 12.75, "elapsed_min": 0.23310513099034627}
+{
+  "name": "nuscenes_baseline_s0_smoke",
+  "best_epoch": 1,
+  "eval_split": "test",
+  "day": {
+    "frames": 4449,
+    "clean_frames": 4,
+    "robust_frames": 2,
+    "clean_ap50": 0.0017605633802816902,
+    "linf_ap50": 0.0,
+    "l2_ap50": 0.008928571428571428,
+    "l1_ap50": 0.0
+  },
+  "night": {
+    "frames": 3345,
+    "clean_frames": 4,
+    "robust_frames": 2,
+    "clean_ap50": 0.0,
+    "linf_ap50": 0.0,
+    "l2_ap50": 0.0,
+    "l1_ap50": 0.0
+  },
+  "rain": {
+    "frames": 6028,
+    "clean_frames": 4,
+    "robust_frames": 2,
+    "clean_ap50": 0.0007194244604316548,
+    "linf_ap50": 0.009259259259259259,
+    "l2_ap50": 0.0,
+    "l1_ap50": 0.0
+  },
+  "night_rain": {
+    "frames": 642,
+    "clean_frames": 4,
+    "robust_frames": 2,
+    "clean_ap50": 0.006666666666666667,
+    "linf_ap50": 0.0,
+    "l2_ap50": 0.0,
+    "l1_ap50": 0.0
+  }
+}

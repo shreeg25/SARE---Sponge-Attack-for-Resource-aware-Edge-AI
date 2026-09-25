@@ -1,0 +1,26 @@
+# started 2026-09-25T14:18:10
+# cmd: scripts/calibrate_budgets.py --config configs/nuscenes/train_baseline.yaml --ckpt checkpoints/nuscenes_baseline_s0.pth
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\calibrate_nuscenes_baseline_s0_20260925_141810.log
+clean AP50 0.5732
+
+norm   budget (x/255)     AP50     drop
+linf             0.25   0.2318   0.3415
+Traceback (most recent call last):
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\calibrate_budgets.py", line 96, in <module>
+    main()
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\calibrate_budgets.py", line 86, in main
+    a = ap_under(model, val, idx, adv_cfg, norm, args.steps, dev, amp, ncls)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\calibrate_budgets.py", line 41, in ap_under
+    img = pgd(model, [img], [tgt], norm, adv_cfg, steps, amp)[0]
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\src\attacks.py", line 81, in pgd
+    grads = torch.autograd.grad(loss, deltas)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "e:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\autograd\__init__.py", line 496, in grad
+    result = _engine_run_backward(
+             ^^^^^^^^^^^^^^^^^^^^^
+  File "e:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\autograd\graph.py", line 823, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

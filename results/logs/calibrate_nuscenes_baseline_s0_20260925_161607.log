@@ -1,0 +1,17 @@
+# started 2026-09-25T16:16:07
+# cmd: scripts/calibrate_budgets.py --config configs/nuscenes/train_baseline.yaml --ckpt checkpoints/nuscenes_baseline_s0.pth --norms l1
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\calibrate_nuscenes_baseline_s0_20260925_161607.log
+norm  budget(x/255)    AP50      P      R     F1  FP/frm det/frm    drop
+clean        0.0000  0.5732  0.673  0.667  0.670    1.92    5.87  0.0000
+l1           0.0039  0.3473  0.526  0.544  0.535    2.90    6.12  0.2259
+l1           0.0078  0.2342  0.393  0.444  0.417    4.06    6.69  0.3390
+l1           0.0156  0.0792  0.246  0.309  0.274    5.61    7.44  0.4940
+l1           0.0312  0.0222  0.115  0.177  0.140    8.05    9.10  0.5510
+l1           0.0625  0.0097  0.071  0.123  0.090    9.53   10.26  0.5635
+l1           0.1250  0.0029  0.033  0.068  0.044   11.86   12.26  0.5703
+l1           0.2500  0.0013  0.019  0.046  0.027   13.63   13.90  0.5719
+l1           0.5000  0.0001  0.004  0.012  0.006   16.97   17.04  0.5731
+l1           1.0000  0.0000  0.001  0.003  0.002   18.84   18.86  0.5732
+
+table saved to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\calibration\nuscenes_baseline_s0_l1.csv
+Send this table back: budgets are matched at the L_inf eps where AP50 is ~half of clean.
