@@ -1,0 +1,41 @@
+{
+  "name": "nuscenes_baseline_s0_smoke",
+  "best_epoch": 1,
+  "eval_split": "test",
+  "day": {
+    "frames": 4449,
+    "clean_frames": 4,
+    "robust_frames": 2,
+    "clean_ap50": 0.0017605633802816902,
+    "linf_ap50": 0.0,
+    "l2_ap50": 0.008928571428571428,
+    "l1_ap50": 0.0
+  },
+  "night": {
+    "frames": 3345,
+    "clean_frames": 4,
+    "robust_frames": 2,
+    "clean_ap50": 0.0,
+    "linf_ap50": 0.0,
+    "l2_ap50": 0.0,
+    "l1_ap50": 0.0
+  },
+  "rain": {
+    "frames": 6028,
+    "clean_frames": 4,
+    "robust_frames": 2,
+    "clean_ap50": 0.0007194244604316548,
+    "linf_ap50": 0.009259259259259259,
+    "l2_ap50": 0.0,
+    "l1_ap50": 0.0
+  },
+  "night_rain": {
+    "frames": 642,
+    "clean_frames": 4,
+    "robust_frames": 2,
+    "clean_ap50": 0.006666666666666667,
+    "linf_ap50": 0.0,
+    "l2_ap50": 0.0,
+    "l1_ap50": 0.0
+  }
+}

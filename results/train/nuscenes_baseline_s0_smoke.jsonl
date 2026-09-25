@@ -1,0 +1,18 @@
+{"step": 1, "epoch": 0, "lr": 0.0005, "loss_clean": 2.1861796379089355, "norm": null, "loss_adv": null, "s_per_it": 14.440113544464111, "skipped": 0}
+{"step": 2, "epoch": 0, "lr": 0.00075, "loss_clean": 2.1675686836242676, "norm": null, "loss_adv": null, "s_per_it": 7.334697008132935, "skipped": 0}
+{"step": 3, "epoch": 0, "lr": 0.001, "loss_clean": 1.7826828956604004, "norm": null, "loss_adv": null, "s_per_it": 4.957980791727702, "skipped": 0}
+{"step": 4, "epoch": 0, "lr": 0.00125, "loss_clean": 2.0567362308502197, "norm": null, "loss_adv": null, "s_per_it": 3.7717232704162598, "skipped": 0}
+{"step": 5, "epoch": 0, "lr": 0.0015, "loss_clean": 1.7443126440048218, "norm": null, "loss_adv": null, "s_per_it": 3.057606744766235, "skipped": 0}
+{"epoch": 1, "val_ap50": 0.03501985941505346, "val_linf_ap50": 0.0, "select_score": 0.01750992970752673, "best_epoch": 1, "val_dets_per_frame": 0.0, "elapsed_min": 0.27767372131347656}
+{"step": 1, "epoch": 0, "lr": 6.666666666666667e-05, "loss_clean": 2.684335708618164, "norm": null, "loss_adv": null, "s_per_it": 12.437571287155151, "skipped": 0}
+{"step": 2, "epoch": 0, "lr": 0.0001, "loss_clean": 2.2466797828674316, "norm": null, "loss_adv": null, "s_per_it": 6.325356125831604, "skipped": 0}
+{"step": 3, "epoch": 0, "lr": 0.00013333333333333334, "loss_clean": 2.0435328483581543, "norm": null, "loss_adv": null, "s_per_it": 4.284696817398071, "skipped": 0}
+{"step": 4, "epoch": 0, "lr": 0.00016666666666666666, "loss_clean": 2.1994593143463135, "norm": null, "loss_adv": null, "s_per_it": 3.2625465989112854, "skipped": 0}
+{"step": 5, "epoch": 0, "lr": 0.0002, "loss_clean": 1.8328782320022583, "norm": null, "loss_adv": null, "s_per_it": 2.649262571334839, "skipped": 0}
+{"epoch": 1, "val_ap50": 0.008559791201792245, "val_linf_ap50": 0.0, "select_score": 0.0042798956008961225, "best_epoch": 1, "val_dets_per_frame": 12.75, "elapsed_min": 0.24287910461425782}
+{"step": 1, "epoch": 0, "lr": 6.666666666666667e-05, "loss_clean": 2.684335708618164, "norm": null, "loss_adv": null, "s_per_it": 12.116495609283447, "skipped": 0}
+{"step": 2, "epoch": 0, "lr": 0.0001, "loss_clean": 2.2424442768096924, "norm": null, "loss_adv": null, "s_per_it": 6.169662356376648, "skipped": 0}
+{"step": 3, "epoch": 0, "lr": 0.00013333333333333334, "loss_clean": 2.0320117473602295, "norm": null, "loss_adv": null, "s_per_it": 4.1784294446309405, "skipped": 0}
+{"step": 4, "epoch": 0, "lr": 0.00016666666666666666, "loss_clean": 2.1899399757385254, "norm": null, "loss_adv": null, "s_per_it": 3.186356544494629, "skipped": 0}
+{"step": 5, "epoch": 0, "lr": 0.0002, "loss_clean": 1.8367810249328613, "norm": null, "loss_adv": null, "s_per_it": 2.5882551670074463, "skipped": 0}
+{"epoch": 1, "val_ap50": 0.008559791201792245, "val_linf_ap50": 0.0, "select_score": 0.0042798956008961225, "best_epoch": 1, "val_dets_per_frame": 12.75, "elapsed_min": 0.23310513099034627}
