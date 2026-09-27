@@ -6,9 +6,12 @@ import json
 import os
 import random
 
+import numpy as np
 import torch
 from torch.utils.data import Dataset
 from torchvision.io import ImageReadMode, read_image
+
+from src.augment import condition_aug
 
 
 class MOT17Det(Dataset):
@@ -72,7 +75,7 @@ class NuScenes2D(Dataset):
     """CAM_FRONT keyframes from the index written by scripts/prepare_nuscenes.py.
     Labels: 1 pedestrian, 2 vehicle, 3 cyclist."""
 
-    def __init__(self, index_path, data_root, split, conditions, stride=1, hflip=False):
+    def __init__(self, index_path, data_root, split, conditions, stride=1, hflip=False, aug=None):
         with open(index_path) as fh:
             recs = json.load(fh)["records"]
         recs = [r for r in recs if r["split"] == split and r["condition"] in conditions]
@@ -81,6 +84,7 @@ class NuScenes2D(Dataset):
         if not recs:
             raise ValueError(f"no frames for split={split} conditions={conditions} in {index_path}")
         self.items, self.root, self.hflip = recs[::stride], data_root, hflip
+        self.aug, self._calls = aug, 0          # aug: {"night_p", "rain_p"} or None
 
     def __len__(self):
         return len(self.items)
@@ -88,6 +92,13 @@ class NuScenes2D(Dataset):
     def __getitem__(self, i):
         r = self.items[i]
         img = read_image(os.path.join(self.root, r["file"]), ImageReadMode.RGB).float().div(255.0)
+        if self.aug:
+            # seed from the worker's torch seed + a call counter: reproducible, different every epoch
+            self._calls += 1
+            rng = np.random.default_rng((torch.initial_seed() + 7919 * self._calls + i) % 2 ** 32)
+            out, _ = condition_aug(img.permute(1, 2, 0).numpy(), rng,
+                                   self.aug.get("night_p", 0.0), self.aug.get("rain_p", 0.0))
+            img = torch.from_numpy(np.ascontiguousarray(out)).permute(2, 0, 1).contiguous()
         W = img.shape[2]
         boxes = torch.tensor(r["boxes"], dtype=torch.float32).reshape(-1, 4)
         labels = torch.tensor(r["labels"], dtype=torch.int64)
@@ -111,7 +122,8 @@ def build_datasets(cfg):
         return train, val
     if name == "nuscenes":
         c = cfg["nuscenes"]
-        train = NuScenes2D(c["index"], c["root"], "train", ["day"], c["train_stride"], hflip=True)
+        train = NuScenes2D(c["index"], c["root"], "train", ["day"], c["train_stride"], hflip=True,
+                           aug=cfg["train"].get("aug"))
         val = NuScenes2D(c["index"], c["root"], "select", ["day"], c["val_stride"], hflip=False)
         return train, val
     raise ValueError(f"unknown dataset {name}")
