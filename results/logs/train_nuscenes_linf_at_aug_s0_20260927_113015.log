@@ -1,0 +1,33 @@
+# started 2026-09-27T11:30:15
+# cmd: scripts/train/train.py --config configs/nuscenes/train_linf_at_aug.yaml
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\train_nuscenes_linf_at_aug_s0_20260927_113015.log
+train frames 3667, select frames 3964, device cuda, amp True
+{"step": 20, "epoch": 1, "lr": 0.0007000000000000001, "loss_clean": 0.5810500383377075, "norm": "linf", "loss_adv": 0.8039587140083313, "s_per_it": 2.414680743217468, "skipped": 0}
+Traceback (most recent call last):
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\train\train.py", line 247, in <module>
+    main()
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\train\train.py", line 155, in main
+    loss_adv = sum(model(adv, tgts).values())
+                   ^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\nn\modules\module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\nn\modules\module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torchvision\models\detection\generalized_rcnn.py", line 83, in forward
+    images, targets = self.transform(images, targets)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\nn\modules\module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\nn\modules\module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torchvision\models\detection\transform.py", line 141, in forward
+    image = self.normalize(image)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torchvision\models\detection\transform.py", line 167, in normalize
+    mean = torch.as_tensor(self.image_mean, dtype=dtype, device=device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt
