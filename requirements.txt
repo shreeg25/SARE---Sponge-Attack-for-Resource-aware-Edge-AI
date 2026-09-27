@@ -5,3 +5,5 @@ scipy
 pyyaml
 pandas
 pyarrow
+deep-sort-realtime
+motmetrics
