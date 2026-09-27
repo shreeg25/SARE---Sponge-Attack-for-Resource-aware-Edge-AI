@@ -1,0 +1,88 @@
+# started 2026-09-27T02:08:06
+# cmd: scripts/extract_dets.py --config configs/nuscenes/train_baseline.yaml --ckpt checkpoints/nuscenes_bgat_s0.pth
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\extract_nuscenes_bgat_s0_20260927_020806.log
+20 scenes, 806 keyframes, attacks ['clean', 'linf', 'l2', 'l1'], device cuda
+  [clean] 40/806 frames, 0.0 min, ~0.9 min left
+  [clean] 79/806 frames, 0.1 min, ~0.7 min left
+  [clean] 120/806 frames, 0.1 min, ~0.7 min left
+  [clean] 160/806 frames, 0.2 min, ~0.6 min left
+  [clean] 201/806 frames, 0.2 min, ~0.6 min left
+  [clean] 242/806 frames, 0.2 min, ~0.5 min left
+  [clean] 282/806 frames, 0.3 min, ~0.5 min left
+  [clean] 322/806 frames, 0.3 min, ~0.4 min left
+  [clean] 362/806 frames, 0.3 min, ~0.4 min left
+  [clean] 402/806 frames, 0.3 min, ~0.3 min left
+  [clean] 443/806 frames, 0.4 min, ~0.3 min left
+  [clean] 484/806 frames, 0.4 min, ~0.3 min left
+  [clean] 524/806 frames, 0.5 min, ~0.2 min left
+  [clean] 564/806 frames, 0.5 min, ~0.2 min left
+  [clean] 605/806 frames, 0.5 min, ~0.2 min left
+  [clean] 646/806 frames, 0.6 min, ~0.1 min left
+  [clean] 686/806 frames, 0.6 min, ~0.1 min left
+  [clean] 726/806 frames, 0.6 min, ~0.1 min left
+  [clean] 766/806 frames, 0.7 min, ~0.0 min left
+  [clean] 806/806 frames, 0.7 min, ~0.0 min left
+wrote E:\SARE — Sponge Attack for Resource-aware Edge AI\results\pipeline\nuscenes_bgat_s0\clean.pkl  (mean 2.82 forwarded detections/frame)
+  [linf] 40/806 frames, 0.4 min, ~8.0 min left
+  [linf] 79/806 frames, 0.8 min, ~7.5 min left
+  [linf] 120/806 frames, 1.2 min, ~7.1 min left
+  [linf] 160/806 frames, 1.7 min, ~6.7 min left
+  [linf] 201/806 frames, 2.1 min, ~6.3 min left
+  [linf] 242/806 frames, 2.5 min, ~5.8 min left
+  [linf] 282/806 frames, 2.9 min, ~5.4 min left
+  [linf] 322/806 frames, 3.3 min, ~5.0 min left
+  [linf] 362/806 frames, 3.7 min, ~4.6 min left
+  [linf] 402/806 frames, 4.1 min, ~4.2 min left
+  [linf] 443/806 frames, 4.6 min, ~3.7 min left
+  [linf] 484/806 frames, 5.0 min, ~3.3 min left
+  [linf] 524/806 frames, 5.4 min, ~2.9 min left
+  [linf] 564/806 frames, 5.8 min, ~2.5 min left
+  [linf] 605/806 frames, 6.3 min, ~2.1 min left
+  [linf] 646/806 frames, 6.7 min, ~1.7 min left
+  [linf] 686/806 frames, 7.1 min, ~1.2 min left
+  [linf] 726/806 frames, 7.5 min, ~0.8 min left
+  [linf] 766/806 frames, 8.0 min, ~0.4 min left
+  [linf] 806/806 frames, 8.4 min, ~0.0 min left
+wrote E:\SARE — Sponge Attack for Resource-aware Edge AI\results\pipeline\nuscenes_bgat_s0\linf.pkl  (mean 21.45 forwarded detections/frame)
+  [l2] 40/806 frames, 0.4 min, ~7.8 min left
+  [l2] 79/806 frames, 0.8 min, ~7.5 min left
+  [l2] 120/806 frames, 1.2 min, ~7.1 min left
+  [l2] 160/806 frames, 1.6 min, ~6.6 min left
+  [l2] 201/806 frames, 2.1 min, ~6.2 min left
+  [l2] 242/806 frames, 2.5 min, ~5.8 min left
+  [l2] 282/806 frames, 2.9 min, ~5.4 min left
+  [l2] 322/806 frames, 3.3 min, ~5.0 min left
+  [l2] 362/806 frames, 3.7 min, ~4.6 min left
+  [l2] 402/806 frames, 4.1 min, ~4.2 min left
+  [l2] 443/806 frames, 4.6 min, ~3.7 min left
+  [l2] 484/806 frames, 5.0 min, ~3.3 min left
+  [l2] 524/806 frames, 5.4 min, ~2.9 min left
+  [l2] 564/806 frames, 5.8 min, ~2.5 min left
+  [l2] 605/806 frames, 6.2 min, ~2.1 min left
+  [l2] 646/806 frames, 6.6 min, ~1.6 min left
+  [l2] 686/806 frames, 7.0 min, ~1.2 min left
+  [l2] 726/806 frames, 7.5 min, ~0.8 min left
+  [l2] 766/806 frames, 7.9 min, ~0.4 min left
+  [l2] 806/806 frames, 8.3 min, ~0.0 min left
+wrote E:\SARE — Sponge Attack for Resource-aware Edge AI\results\pipeline\nuscenes_bgat_s0\l2.pkl  (mean 8.68 forwarded detections/frame)
+  [l1] 40/806 frames, 0.4 min, ~8.3 min left
+  [l1] 79/806 frames, 0.9 min, ~8.0 min left
+  [l1] 120/806 frames, 1.3 min, ~7.6 min left
+  [l1] 160/806 frames, 1.8 min, ~7.1 min left
+  [l1] 201/806 frames, 2.2 min, ~6.6 min left
+  [l1] 242/806 frames, 2.7 min, ~6.2 min left
+  [l1] 282/806 frames, 3.1 min, ~5.8 min left
+  [l1] 322/806 frames, 3.6 min, ~5.3 min left
+  [l1] 362/806 frames, 4.0 min, ~4.9 min left
+  [l1] 402/806 frames, 4.5 min, ~4.5 min left
+  [l1] 443/806 frames, 4.9 min, ~4.0 min left
+  [l1] 484/806 frames, 5.4 min, ~3.6 min left
+  [l1] 524/806 frames, 5.8 min, ~3.1 min left
+  [l1] 564/806 frames, 6.3 min, ~2.7 min left
+  [l1] 605/806 frames, 6.7 min, ~2.2 min left
+  [l1] 646/806 frames, 7.2 min, ~1.8 min left
+  [l1] 686/806 frames, 7.6 min, ~1.3 min left
+  [l1] 726/806 frames, 8.1 min, ~0.9 min left
+  [l1] 766/806 frames, 8.5 min, ~0.4 min left
+  [l1] 806/806 frames, 8.9 min, ~0.0 min left
+wrote E:\SARE — Sponge Attack for Resource-aware Edge AI\results\pipeline\nuscenes_bgat_s0\l1.pkl  (mean 7.09 forwarded detections/frame)

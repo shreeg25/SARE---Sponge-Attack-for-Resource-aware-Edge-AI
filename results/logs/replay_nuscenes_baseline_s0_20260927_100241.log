@@ -1,0 +1,38 @@
+# started 2026-09-27T10:02:41
+# cmd: scripts/replay_pipeline.py --run results/pipeline/nuscenes_baseline_s0 --guards none cap10 --reid-ms 1.11
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\replay_nuscenes_baseline_s0_20260927_100241.log
+
+nuscenes_baseline_s0  (n_init=3, max_age=4, max_cos=0.4)
+condition   attack guard   det/f reid/f   p95  out/f  up B/f  trk ms    MOTA   IDF1  IDsw
+day         clean  cap10    4.72   4.69     9   1.86    59.5    1.49   0.240  0.334    54
+day         clean  none     4.72   4.72     9   1.88    60.0    1.34   0.242  0.338    55
+day         l1     cap10   11.31   8.59    10   1.68    53.7    2.06  -0.280  0.027     1
+day         l1     none    11.31  11.31    21   2.09    67.0    2.12  -0.354  0.029     3
+day         l2     cap10   16.06   9.64    10   1.96    62.6    2.07  -0.362  0.008     1
+day         l2     none    16.06  16.06    27   2.79    89.2    3.38  -0.519  0.009     1
+day         linf   cap10   28.45   9.99    10   1.95    62.4    2.32  -0.373  0.000     0
+day         linf   none    28.45  28.45    45   5.69   182.0    6.59  -1.088  0.000     0
+night       clean  cap10    1.07   1.07     4   0.48    15.3    0.32   0.150  0.286     6
+night       clean  none     1.07   1.07     4   0.48    15.3    0.25   0.150  0.286     6
+night       l1     cap10    8.00   6.96    10   0.85    27.1    1.63  -0.397  0.000     0
+night       l1     none     8.00   8.00    16   0.91    29.1    1.29  -0.428  0.000     0
+night       l2     cap10   12.95   8.77    10   1.39    44.4    1.65  -0.652  0.000     0
+night       l2     none    12.95  12.95    25   1.99    63.7    2.46  -0.935  0.000     0
+night       linf   cap10   27.04   9.80    10   2.42    77.5    2.03  -1.138  0.000     0
+night       linf   none    27.04  27.04    44   6.62   211.7    6.59  -3.107  0.000     0
+rain        clean  cap10    6.72   6.23    10   2.93    93.8    2.12   0.113  0.297   104
+rain        clean  none     6.72   6.72    13   3.19   102.0    2.66   0.090  0.303   108
+rain        l1     cap10   15.03   9.42    10   2.07    66.2    2.17  -0.273  0.028     3
+rain        l1     none    15.03  15.03    25   3.27   104.5    3.23  -0.451  0.028     2
+rain        l2     cap10   23.19   9.74    10   2.40    76.9    2.23  -0.367  0.003     0
+rain        l2     none    23.19  23.19    40   6.08   194.5    5.27  -0.934  0.002     0
+rain        linf   cap10   31.43   9.86    10   2.23    71.4    2.08  -0.343  0.001     0
+rain        linf   none    31.43  31.43    51   8.72   279.2    7.14  -1.345  0.001     0
+night_rain  clean  cap10    1.20   1.20     4   0.46    14.8    0.35   0.105  0.199     5
+night_rain  clean  none     1.20   1.20     4   0.46    14.8    0.36   0.105  0.199     5
+night_rain  l1     cap10    8.54   6.78    10   0.80    25.6    1.12  -0.255  0.000     0
+night_rain  l1     none     8.54   8.54    19   1.06    34.1    1.57  -0.339  0.000     0
+night_rain  l2     cap10   13.67   8.57    10   1.44    46.2    1.73  -0.460  0.000     0
+night_rain  l2     none    13.67  13.67    27   2.37    75.8    3.41  -0.754  0.000     0
+night_rain  linf   cap10   24.24   9.41    10   2.09    66.9    2.19  -0.666  0.000     0
+night_rain  linf   none    24.24  24.24    47   5.56   177.8    5.02  -1.770  0.000     0

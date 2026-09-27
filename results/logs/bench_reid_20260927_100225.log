@@ -1,0 +1,8 @@
+# started 2026-09-27T10:02:25
+# cmd: scripts/bench_reid.py
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\bench_reid_20260927_100225.log
+CPU threads: 6
+batch   1:     5.69 ms total,   5.69 ms/crop
+batch   4:    12.60 ms total,   3.15 ms/crop
+batch  16:    17.79 ms total,   1.11 ms/crop
+batch  32:    30.40 ms total,   0.95 ms/crop

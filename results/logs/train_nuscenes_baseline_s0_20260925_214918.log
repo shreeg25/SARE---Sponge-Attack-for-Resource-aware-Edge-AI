@@ -3,3 +3,36 @@
 logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\train_nuscenes_baseline_s0_20260925_214918.log
 train frames 3667, select frames 3964, device cuda, amp True
 {"step": 20, "epoch": 1, "lr": 0.0007000000000000001, "loss_clean": 0.5692688822746277, "norm": null, "loss_adv": null, "s_per_it": 1.403891098499298, "skipped": 0}
+{"step": 40, "epoch": 1, "lr": 0.0013666666666666666, "loss_clean": 0.6366486549377441, "norm": null, "loss_adv": null, "s_per_it": 0.8847468793392181, "skipped": 0}
+{"step": 60, "epoch": 1, "lr": 0.0020333333333333336, "loss_clean": 0.8720016479492188, "norm": null, "loss_adv": null, "s_per_it": 0.7277466575304667, "skipped": 0}
+{"step": 80, "epoch": 1, "lr": 0.0027, "loss_clean": 0.5006867051124573, "norm": null, "loss_adv": null, "s_per_it": 0.6504704356193542, "skipped": 0}
+{"step": 100, "epoch": 1, "lr": 0.0033666666666666667, "loss_clean": 0.9875364303588867, "norm": null, "loss_adv": null, "s_per_it": 0.6030485510826111, "skipped": 0}
+{"step": 120, "epoch": 1, "lr": 0.004033333333333333, "loss_clean": 0.5673424005508423, "norm": null, "loss_adv": null, "s_per_it": 0.5709307789802551, "skipped": 0}
+{"step": 140, "epoch": 1, "lr": 0.0047, "loss_clean": 1.0633610486984253, "norm": null, "loss_adv": null, "s_per_it": 0.5404117039271763, "skipped": 0}
+{"step": 160, "epoch": 1, "lr": 0.005366666666666666, "loss_clean": 0.8698372840881348, "norm": null, "loss_adv": null, "s_per_it": 0.5260064452886581, "skipped": 0}
+{"step": 180, "epoch": 1, "lr": 0.006033333333333334, "loss_clean": 0.6053745150566101, "norm": null, "loss_adv": null, "s_per_it": 0.5138562772009108, "skipped": 0}
+{"step": 200, "epoch": 1, "lr": 0.0067, "loss_clean": 0.5865650773048401, "norm": null, "loss_adv": null, "s_per_it": 0.5038954448699952, "skipped": 0}
+{"step": 220, "epoch": 1, "lr": 0.007366666666666667, "loss_clean": 0.7560567855834961, "norm": null, "loss_adv": null, "s_per_it": 0.4955875234170394, "skipped": 0}
+{"step": 240, "epoch": 1, "lr": 0.008033333333333333, "loss_clean": 0.5084989666938782, "norm": null, "loss_adv": null, "s_per_it": 0.4896160264809926, "skipped": 0}
+{"step": 260, "epoch": 1, "lr": 0.0087, "loss_clean": 0.6973029971122742, "norm": null, "loss_adv": null, "s_per_it": 0.48515010338563186, "skipped": 0}
+{"step": 280, "epoch": 1, "lr": 0.009366666666666667, "loss_clean": 0.8800278902053833, "norm": null, "loss_adv": null, "s_per_it": 0.4765982942921775, "skipped": 0}
+{"step": 300, "epoch": 1, "lr": 0.01, "loss_clean": 0.5550705194473267, "norm": null, "loss_adv": null, "s_per_it": 0.4728847932815552, "skipped": 0}
+{"step": 320, "epoch": 1, "lr": 0.00999996960586892, "loss_clean": 0.48972752690315247, "norm": null, "loss_adv": null, "s_per_it": 0.4698998734354973, "skipped": 0}
+{"step": 340, "epoch": 1, "lr": 0.009999878423845204, "loss_clean": 0.6222841739654541, "norm": null, "loss_adv": null, "s_per_it": 0.4666722998899572, "skipped": 0}
+Traceback (most recent call last):
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\train\train.py", line 240, in <module>
+    main()
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\train\train.py", line 159, in main
+    loss.backward()
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\_tensor.py", line 626, in backward
+    torch.autograd.backward(
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\autograd\__init__.py", line 347, in backward
+    _engine_run_backward(
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\autograd\graph.py", line 823, in _engine_run_backward
+    return Variable._execution_engine.run_backward(  # Calls into the C++ engine to run the backward pass
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: CUDA error: out of memory
+CUDA kernel errors might be asynchronously reported at some other API call, so the stacktrace below might be incorrect.
+For debugging consider passing CUDA_LAUNCH_BLOCKING=1
+Compile with `TORCH_USE_CUDA_DSA` to enable device-side assertions.
+
