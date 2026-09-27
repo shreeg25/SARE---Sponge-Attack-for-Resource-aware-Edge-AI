@@ -32,10 +32,10 @@ train:
 adv:
   norms: [linf, l2, l1]           # cycled one per iteration
   lambda: 1.0
-  train_steps: 2
-  linf_eps: 0.0313725             # 8/255
-  l2_rms: 0.0078431               # 2/255 per-pixel RMS, calibrated to match L_inf 8/255
-  l1_mean: 0.0009804              # 0.25/255 per-pixel mean, calibrated to match L_inf 8/255
+  train_steps: 3
+  linf_eps: 0.0078431             # 2/255, train and eval
+  l2_rms: 0.0019608               # 0.5/255 RMS (calibrated ratio L_inf/L2 = 4)
+  l1_mean: 0.0002451              # 0.0625/255 mean (calibrated ratio L_inf/L1 = 32)
   l1_sparsity: 0.99               # L1 steps touch the top 1% of gradient coordinates
 
 eval:
