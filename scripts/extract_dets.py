@@ -1,6 +1,7 @@
 """
 Stage A of the pipeline experiments (GPU). For whole nuScenes test scenes,
-runs the detector on every keyframe, clean and under each attack, and saves
+runs the detector on every keyframe, clean and under each attack (accuracy
+PGD: linf/l2/l1; sponge: inflate, sponge_act, uap -- see src/sponge.py), and saves
 what the edge pipeline would receive:
 
   - detections above the 0.4 forwarding threshold (box, score, class)
@@ -35,6 +36,7 @@ import yaml
 from torchvision.io import ImageReadMode, read_image
 
 from src.attacks import pgd
+from src.sponge import apply_uap, sponge_pgd
 from src.logutil import start_log
 from src.models import load_detector
 from src.reid import EMB_DIM, Embedder, crops_from
@@ -58,7 +60,9 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--config", required=True)
     ap.add_argument("--ckpt", required=True)
-    ap.add_argument("--attacks", nargs="+", default=["clean", "linf", "l2", "l1"])
+    ap.add_argument("--attacks", nargs="+", default=["clean", "linf", "l2", "l1", "inflate", "sponge_act", "uap"],
+                    help="accuracy PGD: linf l2 l1 | sponge: inflate sponge_act uap")
+    ap.add_argument("--uap", default=None, help="universal perturbation .pt (default results/uap/<ckpt stem>.pt)")
     ap.add_argument("--conditions", nargs="+", default=["day", "night", "rain", "night_rain"])
     ap.add_argument("--scenes-per-cond", type=int, default=5)
     ap.add_argument("--steps", type=int, default=10)
@@ -81,6 +85,12 @@ def main():
     print(f"{len(scenes)} scenes, {n_frames} keyframes, attacks {args.attacks}, device {dev}")
 
     model, _ = load_detector(str(ROOT / args.ckpt), dev)
+    delta = None
+    if "uap" in args.attacks:
+        uap_path = Path(args.uap) if args.uap else ROOT / "results" / "uap" / f"{stem}.pt"
+        if not uap_path.is_file():
+            raise FileNotFoundError(f"{uap_path} missing: run scripts/train_uap.py first, or drop 'uap'")
+        delta = torch.load(uap_path, map_location="cpu")["delta"].to(dev)
     model.roi_heads.detections_per_img = args.max_dets
     embedder = Embedder().eval().to(dev)
     out_dir = ROOT / "results" / "pipeline" / stem
@@ -94,10 +104,16 @@ def main():
                 x = read_image(str(data_root / r["file"]), ImageReadMode.RGB).float().div(255).to(dev)
                 gt_boxes = torch.tensor(r["boxes"], dtype=torch.float32).reshape(-1, 4)
                 gt_labels = torch.tensor(r["labels"], dtype=torch.int64)
-                if attack != "clean":
+                if attack in ("linf", "l2", "l1"):                 # accuracy attack (loss-max PGD)
                     tgt = {"boxes": gt_boxes.to(dev), "labels": gt_labels.to(dev)}
                     x = pgd(model, [x], [tgt], attack, cfg["adv"], args.steps, amp)[0]
                     x = torch.round(x * 255) / 255          # what a camera / saved frame carries
+                elif attack in ("inflate", "sponge_act"):          # sponge attacks, L_inf budget
+                    x = sponge_pgd(model, x, attack, cfg["adv"], args.steps, "linf", amp)
+                elif attack == "uap":                              # universal, same delta every frame
+                    x = apply_uap(x, delta)
+                elif attack != "clean":
+                    raise ValueError(attack)
                 model.eval()
                 with torch.no_grad():
                     out = model([x])[0]
