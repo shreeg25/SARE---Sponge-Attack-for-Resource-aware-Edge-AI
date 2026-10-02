@@ -39,8 +39,8 @@ from src.guard import build_guard
 from src.logutil import start_log
 
 PAYLOAD_BYTES = 32
-MOT_METRICS = ["mota", "motp", "idf1", "num_switches", "num_false_positives", "num_misses",
-               "mostly_tracked", "num_objects"]
+MOT_METRICS = ["mota", "motp", "idf1", "idtp", "idfp", "idfn", "num_switches",
+               "num_false_positives", "num_misses", "mostly_tracked", "num_objects"]
 
 
 def ltwh(b):
@@ -71,7 +71,8 @@ def replay_scene(seq, guard, args):
     gt_num = {}          # motmetrics needs numeric ids; nuScenes ids are tokens
     rows = []
     for fr in seq["frames"]:
-        dets, emb = fr["dets"], fr["emb"]
+        keep = fr["dets"][:, 4] >= args.score_thr if len(fr["dets"]) else np.zeros(0, dtype=bool)
+        dets, emb = fr["dets"][keep], fr["emb"][keep]
         t0 = time.perf_counter()
         idx = guard.admit(dets, tracker)
         guard_ms = (time.perf_counter() - t0) * 1e3
@@ -122,6 +123,8 @@ def main():
     ap.add_argument("--max-age", type=int, default=4, help="frames; keyframes are 2 Hz, so 4 = 2 s")
     ap.add_argument("--max-cos", type=float, default=0.4)
     ap.add_argument("--reid-ms", type=float, default=None, help="per-crop embedding ms on the target device")
+    ap.add_argument("--score-thr", type=float, default=0.4, help="forwarding threshold applied to saved detections")
+    ap.add_argument("--prior", default="data/geometry_prior.json", help="geometry prior for sare guards")
     args = ap.parse_args()
     run = ROOT / args.run if not Path(args.run).is_absolute() else Path(args.run)
     start_log(ROOT, f"replay_{run.name}")
@@ -131,7 +134,7 @@ def main():
     for attack in args.attacks:
         data = pickle.load(open(run / f"{attack}.pkl", "rb"))
         for gspec in args.guards:
-            guard = build_guard(gspec)
+            guard = build_guard(gspec, ROOT / args.prior if not Path(args.prior).is_absolute() else Path(args.prior))
             accs, names, rows_by_cond = defaultdict(list), defaultdict(list), defaultdict(list)
             for seq in data["scenes"]:
                 acc, rows = replay_scene(seq, guard, args)
