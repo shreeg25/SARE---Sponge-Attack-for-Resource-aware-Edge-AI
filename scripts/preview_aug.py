@@ -35,3 +35,20 @@ for cond in ("night", "rain"):
     r = next(r for r in index if r["split"] == "test" and r["condition"] == cond)
     save(load(r), f"real_{cond}.jpg")
 print(f"wrote previews to {out}")
+
+# Brightness calibration: mean pixel value (0-1) of real frames vs augmented day frames.
+def mean_of(recs, f=None, n=40):
+    vals = []
+    for r in recs[:: max(1, len(recs) // n)][:n]:
+        x = load(r)
+        vals.append(float((f(x, rng) if f else x).mean()))
+    return float(np.mean(vals)), float(np.percentile(vals, 10)), float(np.percentile(vals, 90))
+
+day = [r for r in index if r["split"] == "train"]
+print("\nmean brightness (average, 10th-90th percentile)")
+for name, recs, f in [("real day (train)", day, None),
+                      ("real night (test)", [r for r in index if r["split"] == "test" and r["condition"] == "night"], None),
+                      ("real rain (test)", [r for r in index if r["split"] == "test" and r["condition"] == "rain"], None),
+                      ("synthetic night", day, night_aug), ("synthetic rain", day, rain_aug)]:
+    m, lo, hi = mean_of(recs, f)
+    print(f"  {name:18s} {m:.3f}   ({lo:.3f} - {hi:.3f})")
