@@ -7,3 +7,4 @@ pandas
 pyarrow
 deep-sort-realtime
 motmetrics
+matplotlib
