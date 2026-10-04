@@ -1,0 +1,46 @@
+# started 2026-10-04T15:05:21
+# cmd: scripts/extract_dets.py --config configs/nuscenes/train_baseline.yaml --ckpt checkpoints/nuscenes_baseline_s0.pth --attacks inflate_hi uap
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\extract_nuscenes_baseline_s0_20261004_150521.log
+20 scenes, 806 keyframes, attacks ['inflate_hi', 'uap'], device cuda
+  [inflate_hi] 40/806 frames, 0.5 min, ~10.3 min left
+  [inflate_hi] 79/806 frames, 1.1 min, ~9.8 min left
+  [inflate_hi] 120/806 frames, 1.6 min, ~9.2 min left
+  [inflate_hi] 160/806 frames, 2.1 min, ~8.6 min left
+  [inflate_hi] 201/806 frames, 2.7 min, ~8.0 min left
+  [inflate_hi] 242/806 frames, 3.2 min, ~7.5 min left
+  [inflate_hi] 282/806 frames, 3.7 min, ~7.0 min left
+  [inflate_hi] 322/806 frames, 4.3 min, ~6.4 min left
+  [inflate_hi] 362/806 frames, 4.8 min, ~5.9 min left
+  [inflate_hi] 402/806 frames, 5.4 min, ~5.5 min left
+  [inflate_hi] 443/806 frames, 6.0 min, ~4.9 min left
+  [inflate_hi] 484/806 frames, 6.5 min, ~4.3 min left
+  [inflate_hi] 524/806 frames, 7.0 min, ~3.8 min left
+  [inflate_hi] 564/806 frames, 7.5 min, ~3.2 min left
+  [inflate_hi] 605/806 frames, 8.0 min, ~2.7 min left
+  [inflate_hi] 646/806 frames, 8.5 min, ~2.1 min left
+  [inflate_hi] 686/806 frames, 9.0 min, ~1.6 min left
+  [inflate_hi] 726/806 frames, 9.6 min, ~1.1 min left
+  [inflate_hi] 766/806 frames, 10.1 min, ~0.5 min left
+  [inflate_hi] 806/806 frames, 10.6 min, ~0.0 min left
+wrote E:\SARE — Sponge Attack for Resource-aware Edge AI\results\pipeline\nuscenes_baseline_s0\inflate_hi.pkl  (mean 22.83 forwarded detections/frame)
+  [uap] 40/806 frames, 0.0 min, ~0.9 min left
+  [uap] 79/806 frames, 0.1 min, ~0.7 min left
+  [uap] 120/806 frames, 0.1 min, ~0.7 min left
+  [uap] 160/806 frames, 0.2 min, ~0.6 min left
+  [uap] 201/806 frames, 0.2 min, ~0.6 min left
+  [uap] 242/806 frames, 0.2 min, ~0.5 min left
+  [uap] 282/806 frames, 0.3 min, ~0.5 min left
+  [uap] 322/806 frames, 0.3 min, ~0.5 min left
+  [uap] 362/806 frames, 0.3 min, ~0.4 min left
+  [uap] 402/806 frames, 0.4 min, ~0.4 min left
+  [uap] 443/806 frames, 0.4 min, ~0.3 min left
+  [uap] 484/806 frames, 0.4 min, ~0.3 min left
+  [uap] 524/806 frames, 0.5 min, ~0.3 min left
+  [uap] 564/806 frames, 0.5 min, ~0.2 min left
+  [uap] 605/806 frames, 0.5 min, ~0.2 min left
+  [uap] 646/806 frames, 0.6 min, ~0.1 min left
+  [uap] 686/806 frames, 0.6 min, ~0.1 min left
+  [uap] 726/806 frames, 0.6 min, ~0.1 min left
+  [uap] 766/806 frames, 0.7 min, ~0.0 min left
+  [uap] 806/806 frames, 0.7 min, ~0.0 min left
+wrote E:\SARE — Sponge Attack for Resource-aware Edge AI\results\pipeline\nuscenes_baseline_s0\uap.pkl  (mean 62.82 forwarded detections/frame)
