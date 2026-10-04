@@ -74,32 +74,32 @@ def _iou(a, b):
 
 
 class SAREGuard:
-    """Pipeline admission guard, per frame, with budget K:
-      1. geometry: drop boxes the perspective prior finds implausible;
-      2. if what is left fits in K, admit all of it (no attack suspected: identical
-         to no guard on normal frames);
-      3. otherwise, anchored first: each existing track (tentative or confirmed)
-         gets at most one slot, for the detection best overlapping its Kalman-
-         predicted box -- objects already being followed keep being followed;
-      4. remaining slots go to newcomers chosen uniformly at random, not by score:
-         scores are attacker-controlled, so ranking by them hands the slots to the
-         most confident phantoms.
-    Per-frame phantoms move from frame to frame, never match a predicted box, and
-    churn; real objects, once admitted, stay anchored. Downstream cost is bounded
-    by K ReID passes per frame whatever the attack -- the same bound as a fixed cap."""
+    """Pipeline admission guard, per frame, with budget K (v3, revised after the
+    first nuScenes run showed score-blind admission losing to a plain cap):
+      1. optional geometry prior drops implausible boxes ('_geo');
+      2. if what is left fits in K, admit all of it -- identical to no guard on
+         normal frames;
+      3. otherwise the frame is anomalous: each CONFIRMED track keeps one slot, for
+         the detection best overlapping its Kalman-predicted box (IoU >= anchor_iou);
+         tentative tracks get no protection, so short-lived phantoms cannot reserve
+         slots for themselves;
+      4. remaining slots go to newcomers ranked by score, and during an anomaly a
+         newcomer must also clear tau_hi (inflation attacks push phantoms just past
+         the forwarding threshold, so they sit low in the score range).
+    Downstream cost is bounded by K per frame whatever the attack."""
 
-    def __init__(self, k_max=10, anchor_iou=0.3, prior=None, seed=0):
-        self.k, self.anchor_iou, self.prior, self.seed = int(k_max), anchor_iou, prior, seed
-        self.name = f"sare{self.k}" + ("" if prior else "_nogeo")
+    def __init__(self, k_max=10, anchor_iou=0.3, tau_hi=None, prior=None):
+        self.k, self.anchor_iou, self.tau_hi, self.prior = int(k_max), anchor_iou, tau_hi, prior
+        self.name = f"sare{self.k}" + (f"_t{int(round(tau_hi * 100))}" if tau_hi else "") + ("_geo" if prior else "")
 
     def reset(self):
-        self.rng = np.random.default_rng(self.seed)
+        pass
 
     @staticmethod
     def _predicted_boxes(tracker):
         boxes = []
         for t in tracker.tracker.tracks:
-            if t.is_deleted():
+            if not t.is_confirmed():
                 continue
             x, y, a, h = t.mean[:4] + t.mean[4:8]          # one constant-velocity step ahead
             w = a * h
@@ -126,21 +126,23 @@ class SAREGuard:
                     taken[j] = True
                     anchored.append(j)
         anchored = anchored[: self.k]
-        rest = np.setdiff1d(cand, anchored)
+        rest = [j for j in cand[np.argsort(-dets[cand, 4])] if j not in set(anchored)]
+        if self.tau_hi is not None:
+            rest = [j for j in rest if dets[j, 4] >= self.tau_hi]
         free = self.k - len(anchored)
-        newcomers = self.rng.choice(rest, size=min(free, len(rest)), replace=False) if free > 0 else []
-        return np.sort(np.concatenate([np.array(anchored, dtype=int), np.asarray(newcomers, dtype=int)]))
+        return np.sort(np.array(anchored + rest[:max(free, 0)], dtype=int))
 
 
 def build_guard(spec, prior_path=None):
-    """'none' | 'cap<k>' | 'sare<k>' | 'sare<k>_nogeo'   (e.g. cap10, sare10)"""
+    """'none' | 'cap<k>' | 'sare<k>[_t<tau x100>][_geo]'   e.g. cap10, sare10, sare10_t60, sare10_t60_geo"""
     if spec == "none":
         return NoGuard()
     if spec.startswith("cap"):
         return FixedCap(spec[3:])
     if spec.startswith("sare"):
-        nogeo = spec.endswith("_nogeo")
-        k = int(spec[4:].replace("_nogeo", "") or 10)
-        prior = None if nogeo else GeometryPrior(prior_path)
-        return SAREGuard(k_max=k, prior=prior)
+        parts = spec[4:].split("_")
+        k = int(parts[0] or 10)
+        tau = next((int(p[1:]) / 100 for p in parts[1:] if p.startswith("t")), None)
+        prior = GeometryPrior(prior_path) if "geo" in parts[1:] else None
+        return SAREGuard(k_max=k, tau_hi=tau, prior=prior)
     raise ValueError(f"unknown guard {spec}")
