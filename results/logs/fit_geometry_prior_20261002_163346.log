@@ -1,0 +1,7 @@
+# started 2026-10-02T16:33:46
+# cmd: scripts/fit_geometry_prior.py
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\fit_geometry_prior_20261002_163346.log
+class 1: 23691 boxes, height 1-99% 28-484 px
+class 2: 60325 boxes, height 1-99% 20-776 px
+class 3: 2554 boxes, height 1-99% 25-448 px
+wrote E:\SARE — Sponge Attack for Resource-aware Edge AI\data\geometry_prior.json

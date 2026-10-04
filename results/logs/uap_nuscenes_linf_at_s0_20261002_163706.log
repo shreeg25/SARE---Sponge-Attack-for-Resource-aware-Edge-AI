@@ -1,0 +1,45 @@
+# started 2026-10-02T16:37:06
+# cmd: scripts/train_uap.py --config configs/nuscenes/train_baseline.yaml --ckpt checkpoints/nuscenes_linf_at_s0.pth
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\uap_nuscenes_linf_at_s0_20261002_163706.log
+3964 select frames, eps 2.00/255, 2000 iterations, device cuda
+  iter    50  inflate objective (last 50 mean)    6.64  0.1 min
+  iter   100  inflate objective (last 50 mean)    7.50  0.1 min
+  iter   150  inflate objective (last 50 mean)    6.13  0.2 min
+  iter   200  inflate objective (last 50 mean)    5.60  0.3 min
+  iter   250  inflate objective (last 50 mean)    5.46  0.4 min
+  iter   300  inflate objective (last 50 mean)    4.81  0.4 min
+  iter   350  inflate objective (last 50 mean)    5.86  0.5 min
+  iter   400  inflate objective (last 50 mean)    6.07  0.6 min
+  iter   450  inflate objective (last 50 mean)    4.39  0.6 min
+  iter   500  inflate objective (last 50 mean)    5.42  0.7 min
+  iter   550  inflate objective (last 50 mean)    7.14  0.8 min
+  iter   600  inflate objective (last 50 mean)    6.01  0.8 min
+  iter   650  inflate objective (last 50 mean)    5.89  0.9 min
+  iter   700  inflate objective (last 50 mean)    6.10  1.0 min
+  iter   750  inflate objective (last 50 mean)    5.51  1.1 min
+  iter   800  inflate objective (last 50 mean)    5.81  1.1 min
+  iter   850  inflate objective (last 50 mean)    5.93  1.2 min
+  iter   900  inflate objective (last 50 mean)    6.90  1.3 min
+  iter   950  inflate objective (last 50 mean)    5.72  1.3 min
+  iter  1000  inflate objective (last 50 mean)    6.66  1.4 min
+  iter  1050  inflate objective (last 50 mean)    4.61  1.5 min
+  iter  1100  inflate objective (last 50 mean)    6.39  1.5 min
+  iter  1150  inflate objective (last 50 mean)    6.13  1.6 min
+  iter  1200  inflate objective (last 50 mean)    6.16  1.7 min
+  iter  1250  inflate objective (last 50 mean)    6.72  1.7 min
+  iter  1300  inflate objective (last 50 mean)    5.67  1.8 min
+  iter  1350  inflate objective (last 50 mean)    6.16  1.9 min
+  iter  1400  inflate objective (last 50 mean)    7.66  1.9 min
+  iter  1450  inflate objective (last 50 mean)    5.83  2.0 min
+  iter  1500  inflate objective (last 50 mean)    6.92  2.1 min
+  iter  1550  inflate objective (last 50 mean)    5.72  2.2 min
+  iter  1600  inflate objective (last 50 mean)    5.25  2.2 min
+  iter  1650  inflate objective (last 50 mean)    5.33  2.3 min
+  iter  1700  inflate objective (last 50 mean)    5.27  2.4 min
+  iter  1750  inflate objective (last 50 mean)    7.02  2.4 min
+  iter  1800  inflate objective (last 50 mean)    6.17  2.5 min
+  iter  1850  inflate objective (last 50 mean)    5.28  2.6 min
+  iter  1900  inflate objective (last 50 mean)    6.20  2.7 min
+  iter  1950  inflate objective (last 50 mean)    5.89  2.7 min
+  iter  2000  inflate objective (last 50 mean)    6.14  2.8 min
+wrote E:\SARE — Sponge Attack for Resource-aware Edge AI\results\uap\nuscenes_linf_at_s0.pt
