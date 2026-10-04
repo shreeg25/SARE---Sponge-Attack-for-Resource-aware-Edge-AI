@@ -25,7 +25,7 @@ from src.logutil import start_log
 PER_FRAME = ["dets_in_per_frame", "reid_calls_per_frame", "tracks_out_per_frame", "uplink_B_per_frame",
              "tracker_ms_mean", "guard_ms_mean", "reid_ms_per_frame", "pipeline_ms_per_frame"]
 COUNTS = ["num_false_positives", "num_misses", "num_switches", "num_objects", "idtp", "idfp", "idfn"]
-ATTACK_ORDER = ["clean", "linf", "l2", "l1", "inflate", "sponge_act", "uap", "flood"]
+ATTACK_ORDER = ["clean", "linf", "l2", "l1", "inflate", "inflate_hi", "sponge_act", "uap"]
 
 
 def pool(conds):
