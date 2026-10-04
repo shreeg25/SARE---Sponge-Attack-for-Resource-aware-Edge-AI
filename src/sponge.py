@@ -79,7 +79,7 @@ def activation_objective(model, x, beta=20.0):
 
 
 def sponge_pgd(model, x, objective, adv_cfg, steps, norm="linf", amp=False, restarts=1):
-    """Maximise `objective` ('inflate' | 'sponge_act') within the norm budget.
+    """Maximise `objective` ('inflate' | 'inflate_hi' | 'sponge_act') within the norm budget.
     x: one CHW image in [0, 1]. Returns the best 8-bit-quantised adversarial image."""
     was_training = model.training
     model.eval()
@@ -88,9 +88,10 @@ def sponge_pgd(model, x, objective, adv_cfg, steps, norm="linf", amp=False, rest
 
     def value(z):
         with torch.autocast(device_type=z.device.type, dtype=torch.bfloat16, enabled=amp):
-            if objective == "inflate":
+            if objective in ("inflate", "inflate_hi"):
+                # inflate_hi = adaptive attacker aware of a score-aware guard: phantoms pushed past 0.8
                 with Unsuppressed(model):
-                    return inflation_objective(model([z])[0])
+                    return inflation_objective(model([z])[0], tau=0.8 if objective == "inflate_hi" else 0.4)
             if objective == "sponge_act":
                 return activation_objective(model, z)
         raise ValueError(objective)
