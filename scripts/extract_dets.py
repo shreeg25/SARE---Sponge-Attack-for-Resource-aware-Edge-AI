@@ -42,11 +42,11 @@ from src.models import load_detector
 from src.reid import EMB_DIM, Embedder, crops_from
 
 
-def pick_scenes(records, conditions, per_cond):
-    """Evenly spaced test scenes per condition (deterministic)."""
+def pick_scenes(records, conditions, per_cond, split="test"):
+    """Evenly spaced scenes of `split` per condition (deterministic)."""
     by_scene = defaultdict(list)
     for r in records:
-        if r["split"] == "test" and r["condition"] in conditions:
+        if r["split"] == split and r["condition"] in conditions:
             by_scene[r["scene"]].append(r)
     chosen = []
     for cond in conditions:
@@ -68,6 +68,8 @@ def main():
     ap.add_argument("--steps", type=int, default=10)
     ap.add_argument("--score-thr", type=float, default=0.4)
     ap.add_argument("--max-dets", type=int, default=100, help="deployment cap per frame")
+    ap.add_argument("--split", default="test", choices=["test", "select"],
+                    help="select = day-only held-out training scenes, for choosing guard settings without touching test")
     args = ap.parse_args()
     stem = Path(args.ckpt).stem
     start_log(ROOT, f"extract_{stem}")
@@ -80,7 +82,8 @@ def main():
     amp = bool(cfg["train"]["amp"]) and dev == "cuda"
 
     records = json.load(open(index))["records"]
-    scenes = pick_scenes(records, args.conditions, args.scenes_per_cond)
+    conds = args.conditions if args.split == "test" else ["day"]          # select split is day-only
+    scenes = pick_scenes(records, conds, args.scenes_per_cond, args.split)
     n_frames = sum(len(f) for _, f in scenes)
     print(f"{len(scenes)} scenes, {n_frames} keyframes, attacks {args.attacks}, device {dev}")
 
@@ -93,7 +96,7 @@ def main():
         delta = torch.load(uap_path, map_location="cpu")["delta"].to(dev)
     model.roi_heads.detections_per_img = args.max_dets
     embedder = Embedder().eval().to(dev)
-    out_dir = ROOT / "results" / "pipeline" / stem
+    out_dir = ROOT / "results" / "pipeline" / (stem if args.split == "test" else f"{stem}_{args.split}")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     for attack in args.attacks:
