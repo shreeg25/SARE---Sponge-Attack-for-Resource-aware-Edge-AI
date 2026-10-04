@@ -1,0 +1,48 @@
+# started 2026-10-04T16:55:50
+# cmd: scripts/extract_dets.py --config configs/nuscenes/train_baseline.yaml --ckpt checkpoints/nuscenes_linf_at_aug_s0.pth --split select --attacks clean inflate
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\extract_nuscenes_linf_at_aug_s0_20261004_165550.log
+5 scenes, 202 keyframes, attacks ['clean', 'inflate'], device cuda
+  [clean] 40/202 frames, 0.1 min, ~0.2 min left
+  [clean] 80/202 frames, 0.1 min, ~0.1 min left
+  [clean] 120/202 frames, 0.1 min, ~0.1 min left
+  [clean] 161/202 frames, 0.2 min, ~0.0 min left
+  [clean] 202/202 frames, 0.2 min, ~0.0 min left
+wrote E:\SARE — Sponge Attack for Resource-aware Edge AI\results\pipeline\nuscenes_linf_at_aug_s0_select\clean.pkl  (mean 5.35 forwarded detections/frame)
+  [inflate] 40/202 frames, 0.6 min, ~2.3 min left
+  [inflate] 80/202 frames, 1.1 min, ~1.6 min left
+  [inflate] 120/202 frames, 1.5 min, ~1.1 min left
+  [inflate] 161/202 frames, 2.1 min, ~0.5 min left
+Traceback (most recent call last):
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\extract_dets.py", line 148, in <module>
+    main()
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\scripts\extract_dets.py", line 115, in main
+    x = sponge_pgd(model, x, attack, cfg["adv"], args.steps, "linf", amp)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\src\sponge.py", line 105, in sponge_pgd
+    v = value(x + d)
+        ^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\src\sponge.py", line 94, in value
+    return inflation_objective(model([z])[0], tau=0.8 if objective == "inflate_hi" else 0.4)
+                               ^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\nn\modules\module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\nn\modules\module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torchvision\models\detection\generalized_rcnn.py", line 83, in forward
+    images, targets = self.transform(images, targets)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\nn\modules\module.py", line 1739, in _wrapped_call_impl
+    return self._call_impl(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torch\nn\modules\module.py", line 1750, in _call_impl
+    return forward_call(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torchvision\models\detection\transform.py", line 141, in forward
+    image = self.normalize(image)
+            ^^^^^^^^^^^^^^^^^^^^^
+  File "E:\SARE — Sponge Attack for Resource-aware Edge AI\venv\Lib\site-packages\torchvision\models\detection\transform.py", line 167, in normalize
+    mean = torch.as_tensor(self.image_mean, dtype=dtype, device=device)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+KeyboardInterrupt

@@ -1,0 +1,16 @@
+# started 2026-10-04T16:58:46
+# cmd: scripts/extract_dets.py --config configs/nuscenes/train_baseline.yaml --ckpt checkpoints/nuscenes_linf_at_aug_s0.pth --split select --attacks clean inflate
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\extract_nuscenes_linf_at_aug_s0_20261004_165846.log
+5 scenes, 202 keyframes, attacks ['clean', 'inflate'], device cuda
+  [clean] 40/202 frames, 0.0 min, ~0.2 min left
+  [clean] 80/202 frames, 0.1 min, ~0.1 min left
+  [clean] 120/202 frames, 0.1 min, ~0.1 min left
+  [clean] 161/202 frames, 0.1 min, ~0.0 min left
+  [clean] 202/202 frames, 0.2 min, ~0.0 min left
+wrote E:\SARE — Sponge Attack for Resource-aware Edge AI\results\pipeline\nuscenes_linf_at_aug_s0_select\clean.pkl  (mean 5.35 forwarded detections/frame)
+  [inflate] 40/202 frames, 0.6 min, ~2.2 min left
+  [inflate] 80/202 frames, 1.1 min, ~1.6 min left
+  [inflate] 120/202 frames, 1.6 min, ~1.1 min left
+  [inflate] 161/202 frames, 2.1 min, ~0.5 min left
+  [inflate] 202/202 frames, 2.7 min, ~0.0 min left
+wrote E:\SARE — Sponge Attack for Resource-aware Edge AI\results\pipeline\nuscenes_linf_at_aug_s0_select\inflate.pkl  (mean 23.78 forwarded detections/frame)

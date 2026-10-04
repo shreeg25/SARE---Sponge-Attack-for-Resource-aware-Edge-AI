@@ -1,0 +1,51 @@
+{
+  "attack": "clean",
+  "guard": "thr10_t70",
+  "args": {
+    "run": "results/pipeline/nuscenes_linf_at_aug_s0_select",
+    "attacks": [
+      "clean",
+      "inflate"
+    ],
+    "guards": [
+      "cap10",
+      "thr10_t50",
+      "thr10_t60",
+      "thr10_t70",
+      "thr10_t80"
+    ],
+    "n_init": 3,
+    "max_age": 4,
+    "max_cos": 0.4,
+    "reid_ms": 1.11,
+    "score_thr": 0.4,
+    "prior": "data/geometry_prior.json"
+  },
+  "results": {
+    "day": {
+      "frames": 202,
+      "dets_in_per_frame": 5.346534653465347,
+      "reid_calls_per_frame": 5.247524752475248,
+      "tracks_out_per_frame": 3.0594059405940595,
+      "uplink_B_per_frame": 97.9009900990099,
+      "gt_per_frame": 5.811881188118812,
+      "reid_calls_p95": 10.0,
+      "tracker_ms_mean": 1.3383653488627976,
+      "tracker_ms_p95": 2.856214993516914,
+      "guard_ms_mean": 0.0023782174886748343,
+      "reid_ms_per_frame": 5.824752475247526,
+      "pipeline_ms_per_frame": 7.165496041598998,
+      "mota": 0.37223168654173766,
+      "motp": 0.2116318985574909,
+      "idf1": 0.5301339285714286,
+      "idtp": 475.0,
+      "idfp": 143.0,
+      "idfn": 699.0,
+      "num_switches": 27.0,
+      "num_false_positives": 77.0,
+      "num_misses": 633.0,
+      "mostly_tracked": 10.0,
+      "num_objects": 1174.0
+    }
+  }
+}

@@ -1,0 +1,16 @@
+# started 2026-10-04T17:01:43
+# cmd: scripts/replay_pipeline.py --run results/pipeline/nuscenes_linf_at_aug_s0_select --attacks clean inflate --guards cap10 thr10_t50 thr10_t60 thr10_t70 thr10_t80 --reid-ms 1.11
+logging to E:\SARE — Sponge Attack for Resource-aware Edge AI\results\logs\replay_nuscenes_linf_at_aug_s0_select_20261004_170143.log
+
+nuscenes_linf_at_aug_s0_select  (n_init=3, max_age=4, max_cos=0.4)
+condition   attack guard   det/f reid/f   p95  out/f  up B/f  trk ms    MOTA   IDF1  IDsw
+day         clean  cap10    5.35   5.29    10   3.08    98.5    1.35   0.370  0.530    28
+day         clean  thr10_t50   5.35   5.29    10   3.08    98.5    1.36   0.370  0.530    28
+day         clean  thr10_t60   5.35   5.26    10   3.08    98.7    1.89   0.371  0.530    28
+day         clean  thr10_t70   5.35   5.25    10   3.06    97.9    1.34   0.372  0.530    27
+day         clean  thr10_t80   5.35   5.24    10   3.07    98.2    1.44   0.374  0.528    27
+day         inflate cap10   23.78   9.56    10   3.04    97.3    1.88   0.226  0.427    35
+day         inflate thr10_t50  23.78   9.48    10   3.04    97.4    1.86   0.225  0.427    35
+day         inflate thr10_t60  23.78   9.08    10   3.01    96.3    1.74   0.231  0.431    35
+day         inflate thr10_t70  23.78   8.18    10   2.81    90.0    1.61   0.267  0.449    29
+day         inflate thr10_t80  23.78   6.97    10   2.53    81.0    1.37   0.278  0.444    27
