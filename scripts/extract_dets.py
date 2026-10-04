@@ -61,7 +61,7 @@ def main():
     ap.add_argument("--config", required=True)
     ap.add_argument("--ckpt", required=True)
     ap.add_argument("--attacks", nargs="+", default=["clean", "linf", "l2", "l1", "inflate", "sponge_act", "uap"],
-                    help="accuracy PGD: linf l2 l1 | sponge: inflate sponge_act uap")
+                    help="accuracy PGD: linf l2 l1 | sponge: inflate sponge_act uap | adaptive: inflate_hi")
     ap.add_argument("--uap", default=None, help="universal perturbation .pt (default results/uap/<ckpt stem>.pt)")
     ap.add_argument("--conditions", nargs="+", default=["day", "night", "rain", "night_rain"])
     ap.add_argument("--scenes-per-cond", type=int, default=5)
@@ -108,7 +108,7 @@ def main():
                     tgt = {"boxes": gt_boxes.to(dev), "labels": gt_labels.to(dev)}
                     x = pgd(model, [x], [tgt], attack, cfg["adv"], args.steps, amp)[0]
                     x = torch.round(x * 255) / 255          # what a camera / saved frame carries
-                elif attack in ("inflate", "sponge_act"):          # sponge attacks, L_inf budget
+                elif attack in ("inflate", "inflate_hi", "sponge_act"):   # sponge attacks, L_inf budget
                     x = sponge_pgd(model, x, attack, cfg["adv"], args.steps, "linf", amp)
                 elif attack == "uap":                              # universal, same delta every frame
                     x = apply_uap(x, delta)
