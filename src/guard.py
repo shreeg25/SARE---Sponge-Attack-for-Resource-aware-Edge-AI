@@ -133,12 +133,39 @@ class SAREGuard:
         return np.sort(np.array(anchored + rest[:max(free, 0)], dtype=int))
 
 
+class AnomalyThreshold:
+    """Top-K with an anomaly-triggered threshold (no track memory). If a frame has
+    at most K detections, admit all; otherwise only detections scoring >= tau are
+    eligible, highest first, at most K. Inflation phantoms are pushed just past the
+    0.4 forwarding threshold, so a raised bar during overload removes most of them;
+    an attacker who instead pushes phantoms past tau gets far fewer of them for the
+    same budget. Unlike SAREGuard it keeps no per-track reservations, which the
+    nuScenes runs showed phantoms can occupy (they recur in consecutive frames)."""
+
+    def __init__(self, k, tau):
+        self.k, self.tau = int(k), float(tau)
+        self.name = f"thr{self.k}_t{int(round(self.tau * 100))}"
+
+    def reset(self):
+        pass
+
+    def admit(self, dets, tracker):
+        if len(dets) <= self.k:
+            return np.arange(len(dets))
+        elig = np.flatnonzero(dets[:, 4] >= self.tau)
+        return np.sort(elig[np.argsort(-dets[elig, 4])][: self.k])
+
+
 def build_guard(spec, prior_path=None):
-    """'none' | 'cap<k>' | 'sare<k>[_t<tau x100>][_geo]'   e.g. cap10, sare10, sare10_t60, sare10_t60_geo"""
+    """'none' | 'cap<k>' | 'thr<k>_t<tau x100>' | 'sare<k>[_t<tau x100>][_geo]'
+    e.g. cap10, thr10_t70, sare10_t60"""
     if spec == "none":
         return NoGuard()
     if spec.startswith("cap"):
         return FixedCap(spec[3:])
+    if spec.startswith("thr"):                       # thr<k>_t<tau x100>, e.g. thr10_t70
+        k, t = spec[3:].split("_t")
+        return AnomalyThreshold(int(k), int(t) / 100)
     if spec.startswith("sare"):
         parts = spec[4:].split("_")
         k = int(parts[0] or 10)
